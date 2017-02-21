@@ -1,0 +1,211 @@
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<style type="text/css" media="screen">
+	body {
+		background: #e9ebee;
+	}
+	h4 {
+		font-weight: bold
+	}
+	h5 {
+		font-size: 14px;
+		line-height: 1.5;
+	}
+	label {font-weight: 400}
+	.exam-header {
+		background: #848484;
+	    padding: 20px 0;
+	    -webkit-box-shadow: 0 4px 0 rgba(0,0,0,.1);
+	    box-shadow: 0 4px 0 rgba(0,0,0,.1);
+	    position: fixed;
+	    width: 100%;
+	    z-index: 111;
+	    top: 0;
+	}
+	.exam-content {
+		margin-top: 100px;
+		background: #fff;
+	}
+	.exam-time {
+		color: #fff;
+	    font-size: 20px;
+	    font-weight: 700;
+	    text-shadow: 0 4px 0 rgba(0,0,0,.1);
+	}
+	.exam-question {
+		margin: 20px;
+	}
+	.exam-question > label {
+	    margin-left: 20px;
+	}
+	.panel-body {
+		border: 1px solid;
+	    border-color: #e5e6e9 #dfe0e4 #d0d1d5;
+	    border-radius: 3px;
+	}
+	.MJXc-display {
+	    display: inline-block !important;
+	    margin: 0 0.5em !important;
+	}
+</style>
+<div class="exam-header">
+	<div class="container">
+		<button data-action="finish" class="btn btn-success btn-flat">Nộp bài</button>
+		<div class="exam-time pull-right" id="clockdiv">
+			<span class="hours"></span>
+			<span class="minutes"></span>
+			<span class="seconds"></span>
+		</div>
+	</div>
+</div>
+
+<div class="exam-content container">
+	<div class="panel-body">
+		<h4><%= exam_info %></h4>
+		<% for(var i = 0; i < questions.length; i++) { %>
+			<div class="exam-question" data-question="<%= questions[i]['_id'] %>">
+				<h5><%= (i+1)+'.  '+questions[i]['question'] %></h5>
+				<% if(questions[i]['answers'] != undefined) { %>
+					<% for(var j = 0; j < questions[i]['answers'].length; j++) { %>
+						<label class="<%= questions[i]['type']+questions[i]['style'] %> <%= questions[i]['type']+'-success' %>">
+							<input type="<%= questions[i]['type'] %>" name="answer<%= questions[i]['_id'] %>" value="<%= questions[i]['answers'][j] %>" class="styled"> <span class="lbl"><%= questions[i]['answers'][j] %></span>
+						</label>
+					<% } %>
+				<% }%>
+			</div>
+		<% } %>
+	</div>
+</div>
+
+<script>
+	$(document).ready(function() {
+		$(".styled").uniform({ radioClass: 'choice', selectAutoWidth: false });
+		$('h5').each(function() {
+			var that = $(this);
+			var v = that.text();
+			var test = v.match(/<\/*[b|u].*>/gi);
+			if (test != null && test != []) {
+				var input = v.replace(/&(lt|gt);/g, function (str, p1){
+					return (p1 == "lt")? "<" : ">";
+				});
+				var text = input.replace(/<\/?(?!b|u)[^(?!b|u)>]+(>|$)/gi, "");
+				that.html(text)
+			}
+		})
+		function getTimeRemaining(endtime){
+			var t = endtime - Date.parse(new Date());
+			var seconds = Math.floor( (t/1000) % 60 );
+			var minutes = Math.floor( (t/1000/60) % 60 );
+			var hours = Math.floor( (t/(1000*60*60)) % 24 );
+			var days = Math.floor( t/(1000*60*60*24) );
+			return {
+				'total': t,
+				'days': days,
+				'hours': hours,
+				'minutes': minutes,
+				'seconds': seconds
+			};
+		}
+		function initializeClock(id, endtime) {
+			var clock = document.getElementById(id);
+			var hoursSpan = clock.querySelector('.hours');
+			var minutesSpan = clock.querySelector('.minutes');
+			var secondsSpan = clock.querySelector('.seconds');
+
+			function updateClock() {
+				var t = getTimeRemaining(endtime);
+				if (t.total <= 0) {
+					swal('Hết giờ!', 'bấm nút OK để xem điểm ');
+					$('[data-action="finish"]').remove();
+					clearInterval(timeinterval);
+				} else {
+					hoursSpan.innerHTML = ('0' + t.hours).slice(-2)+' :';
+					minutesSpan.innerHTML = ('0' + t.minutes).slice(-2)+' :';
+					secondsSpan.innerHTML = ('0' + t.seconds).slice(-2);
+				}
+			}
+
+			updateClock();
+			var timeinterval = setInterval(updateClock, 1000);
+		}
+
+		initializeClock('clockdiv', Date.now() +  <%= time %> * 1000);
+		var data_collect = $('.exam-question');
+		$('[data-action="finish"]').click(function() {
+			swal({
+		  	title: "Nộp bài?",
+		  	text: "Bạn chắc chắn nộp bài chứ !",
+		  	type: "warning",
+		  	showCancelButton: true,
+		  	confirmButtonColor: "#DD6B55",
+		  	confirmButtonText: "Nộp bài",
+		  	cancelButtonText: "Không, chưa làm xong",
+		  	closeOnConfirm: false,
+		  	closeOnCancel: true
+			},
+			function(isConfirm){
+		  	if (isConfirm) {
+		  		var user_result = [];
+		  		data_collect.each(function() {
+		  			var that = $(this);
+		  			var input = that.find('input');
+		  			var checker = false;
+		  			input.each(function() {
+			  			if($(this).is(':checked')) {
+			  				checker = true;
+			  				user_result.push(input.index($(this)));
+			  			}
+			  		})
+			  		if (!checker) user_result.push('no_answer');
+		  		})
+		  		$.post('/score-view',{id: '<%= id %>', answers: user_result}, function(res) {
+		  			if(res.ok) {
+		  				swal("Đã nộp !",'Bạn được '+res.score+' điểm', "success");
+		  			}
+		  		})
+		  	}
+			})
+		})
+
+		var do_again_and_show_result = function(score) {
+			swal({
+		  	title: "Đã nộp!",
+		  	text: 'Bạn được '+score+' điểm',
+		  	type: 'success',
+		  	showCancelButton: true,
+		  	confirmButtonColor: "#DD6B55",
+		  	confirmButtonText: "Làm lại",
+		  	cancelButtonText: "Xem đáp án",
+		  	closeOnConfirm: true,
+		  	closeOnCancel: true
+			},function() {
+
+			})
+		};
+
+		var do_again = function(score) {
+			swal({
+		  	title: "Đã nộp!",
+		  	text: 'Bạn được '+score+' điểm',
+		  	type: 'success',
+		  	confirmButtonColor: "#DD6B55",
+		  	confirmButtonText: "Làm lại",
+		  	closeOnConfirm: true,
+			},function() {
+
+			})
+		};
+
+		var show_result = function(score) {
+			swal({
+		  	title: "Đã nộp!",
+		  	text: 'Bạn được '+score+' điểm',
+		  	type: 'success',
+		  	confirmButtonColor: "#DD6B55",
+		  	confirmButtonText: "Xem đáp án",
+		  	closeOnConfirm: true,
+			},function() {
+
+			})
+		};
+	})
+</script>

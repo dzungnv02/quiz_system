@@ -1,0 +1,110 @@
+<div class="col-sm-2 upper">
+	<p>Câu hỏi</p>
+	<% if(questions != undefined && questions.length > 0) { %>
+		<ul id="questions">
+			<% for(var i = 0; i < questions.length; i++) { %>
+				<li data-id="<%= questions[i]['_id'] %>" data-question="<%= questions[i]['question'] %>" data-form="<%= questions[i]['form'] %>" data-ans="<%= questions[i]['answer'] %>"><%= i+1 %></li>
+			<% } %>
+		</ul>
+	<% } %>
+	<div style="margin-top: 30px">
+		<button data-action="add-question" class="btn btn-default btn-flat">+</button>
+		<span style="font-size: 11px;margin: 0 5px"> hoặc </span>
+		<a href="javascript:" title="Chọn từ ngân hàng câu hỏi" data-toggle="modal" data-target="#load-question">Chọn</a>
+	</div>
+</div>
+<div id="a" class="col-sm-8 lower">
+	<% if(template != undefined) for(var i = 0; i < template.length; i++) { %>
+		<%- template[i] %>
+	<% } %>
+</div>
+
+<div id="load-question" class="modal fade" tabindex="-1" role="dialog" style="display:none">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title">Câu hỏi</h4>
+			</div>
+			<div class="modal-body">
+				<select multiple="multiple" id="select-question" class="form-control">
+					<optgroup label="Alaskan/Hawaiian Time Zone">
+						<option value="AK">Alaska</option>
+						<option value="HI">Hawaii</option>
+					</optgroup>
+					<optgroup label="Pacific Time Zone">
+						<option value="CA">California</option>
+						<option value="NV">Nevada</option>
+						<option value="OR">Oregon</option>
+						<option value="WA">Washington</option>
+					</optgroup>
+				</select>
+				<div>
+					<a href="#" role="button" class="btn btn-default pull-right">Chọn</a>
+					<h4>Câu hỏi 1</h4>
+					<p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula.</p>
+				</div>
+				<div>
+					<a href="#" role="button" class="btn btn-default pull-right">Chọn</a>
+					<h4>Câu hỏi 1</h4>
+					<p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula.</p>
+				</div>
+				<div>
+					<a href="#" role="button" class="btn btn-default pull-right">Chọn</a>
+					<h4>Câu hỏi 1</h4>
+					<p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula.</p>
+				</div>
+				<div>
+					<a href="#" role="button" class="btn btn-default pull-right">Chọn</a>
+					<h4>Câu hỏi 1</h4>
+					<p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula.</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="load-exam" class="modal fade" tabindex="-1" role="dialog" style="display:none">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title">Câu hỏi</h4>
+			</div>
+			<div class="modal-body">
+				<select multiple="multiple" id="select-exam" class="form-control">
+					<optgroup label="Alaskan/Hawaiian Time Zone">
+						<option value="AK">Alaska</option>
+						<option value="HI">Hawaii</option>
+					</optgroup>
+					<optgroup label="Pacific Time Zone">
+						<option value="CA">California</option>
+						<option value="NV">Nevada</option>
+						<option value="OR">Oregon</option>
+						<option value="WA">Washington</option>
+					</optgroup>
+				</select>
+				<div>
+					<a href="#" role="button" class="btn btn-default pull-right">Chọn</a>
+					<h4>Câu hỏi 1</h4>
+					<p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula.</p>
+				</div>
+				<div>
+					<a href="#" role="button" class="btn btn-default pull-right">Chọn</a>
+					<h4>Câu hỏi 1</h4>
+					<p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula.</p>
+				</div>
+				<div>
+					<a href="#" role="button" class="btn btn-default pull-right">Chọn</a>
+					<h4>Câu hỏi 1</h4>
+					<p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula.</p>
+				</div>
+				<div>
+					<a href="#" role="button" class="btn btn-default pull-right">Chọn</a>
+					<h4>Câu hỏi 1</h4>
+					<p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula.</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

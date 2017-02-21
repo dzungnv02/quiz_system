@@ -1,0 +1,123 @@
+<div class="panel">
+	<div class="panel-body">
+		<% for(var i = 0; i < exams.length; i++) { %>
+			<div data-exam="<%= exams[i]['_id'] %>">
+				<div class="pull-right">
+					<div class="btn-group">
+            <button type="button" class="btn btn-icon btn-success dropdown-toggle" data-toggle="dropdown"><i class="icon-cog4"></i></button>
+						<ul class="dropdown-menu icons-right dropdown-menu-right" data-exam="<%= exams[i]['_id'] %>">
+							<li><a href="#" data-action="edit-exam">Chỉnh sửa</a></li>
+							<li><a href="#" data-link="<%= exams[i]['link'] %>" data-action="share-exam">Chia sẻ</a></li>
+							<li><a href="#" data-action="">Thống kê</a></li>
+							<li class="divider"></li>
+							<li><a href="#" data-action="delete-exam">Xóa</a></li>
+						</ul>
+          </div>
+				</div>			
+				<h5><%= exams[i]['name'] %>
+					<% if(exams[i]['link']) { %>
+						<span class="label label-success">Đang chia sẻ</span>
+					<% } %>
+				</h5>
+				<ul class="headline-info">
+					<li><%= exams[i]['questions'].length %> câu hỏi</li>
+					<li>tạo bởi <span class="text-semibold text-success"><%= exams[i]['creator'] %></span></li>
+					<li>nhóm 
+						<span class="text-semibold text-info">Toán 6</span>,
+						<span class="text-semibold text-info">Toán 7</span>,
+						<span class="text-semibold text-info">Toán 8</span>,
+						<span data-action="#" class="text-semibold text-success" data-toggle="modal" data-target="#load-group"> + thêm nhóm</span>
+						
+					</li>
+				</ul>
+			</div>
+		<% } %>
+	</div>
+</div>
+<div id="load-group" class="modal fade" tabindex="-1" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title"><i class="icon-men"></i> Thêm nhóm làm bài</h4>
+			</div>
+
+			<div class="modal-body with-padding">
+				<div class="block-inner text-danger">
+					<h6 class="heading-hr">Chọn nhóm <small class="display-block">trong các nhóm bạn đã tạo</small></h6>
+				</div>
+				<select multiple="multiple" class="add-group">
+					<option value="AK">Alaska</option>
+					<option value="HI">Hawaii</option>
+					<option value="CA">California</option>
+					<option value="NV">Nevada</option>
+					<option value="OR">Oregon</option>
+					<option value="WA">Washington</option>
+				</select>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	var selected_exam;
+	$('.add-group').select2({
+		width: '100%',
+		placeholder: 'Thêm nhóm...'
+	});
+	$('[data-action="edit-exam"]').on('click', function(e) {
+		e.preventDefault()
+		selected_exam = $(this).parent().parent().data('exam');
+		window.location = '/manager/exam?exam='+selected_exam;
+	})
+
+	$('[data-action="share-exam"]').on('click', function(e) {
+		e.preventDefault()
+		selected_exam = $(this).parent().parent().data('exam');
+		var link = $(this).data('link');
+		if (!link) {
+			$.post('/manager/exam-share', {id: selected_exam}, function(res) {
+				alert_share(res.link);
+			})
+		} else alert_share(link);
+	})
+
+	var alert_share = function(link) {
+		var full_link = 'http:/localhost:3000/test/'+link;
+		swal({
+		  title: "Chia sẻ!",
+		  text: "Gửi link để làm bài kiểm tra",
+		  type: "input",
+		  showCancelButton: true,
+		  closeOnConfirm: true,
+		  confirmButtonText: "Copy !!!",
+			cancelButtonText: "Hủy chia sẻ",
+		  animation: "slide-from-top",
+		  inputValue: full_link
+		},
+		function(isConfirm){
+			if (isConfirm) {
+				var success   = true,
+			      range     = document.createRange(),
+			      selection;
+				var tmpElem = $('<div>');
+		    tmpElem.css({
+		      position: "absolute",
+		      left:     "-1000px",
+		      top:      "-1000px",
+		    });
+		    tmpElem.text(full_link);
+		    $('body').append(tmpElem);
+		    range.selectNodeContents(tmpElem.get(0));
+		    selection = window.getSelection();
+		    selection.removeAllRanges();
+		    selection.addRange(range);
+			  document.execCommand('copy');
+			  tmpElem.remove();
+			} else {
+				$.post('/manager/exam-share', {id: selected_exam, link: link, cancel: true}, function(res) {
+					console.log('Canceled')
+				})
+			}	
+		})
+	}
+</script>

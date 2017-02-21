@@ -1,0 +1,276 @@
+<div class="row" data-module="create-contest">
+	<div class="panel">
+		<div class="panel-heading">
+			<span class="panel-title">Các bước tạo cuộc thi</span>
+		</div>
+		<div class="panel-body no-padding">
+			<div class="wizard no-margin" id="wizard-forms">
+				<div class="wizard-wrapper no-border">
+					<ul class="wizard-steps">
+						<li data-target="#wizard-info" >
+							<span class="wizard-step-number">1</span>
+							<span class="wizard-step-caption">
+								Thông tin
+								<span class="wizard-step-description">Tổng quát về cuộc thi</span>
+							</span>
+						</li>
+						<li data-target="#wizard-datetime">
+							<span class="wizard-step-number">2</span>
+							<span class="wizard-step-caption">
+								Thời gian
+								<span class="wizard-step-description">Cài đặt thời gian</span>
+							</span>
+						</li>
+						<li data-target="#wizard-subject">
+							<span class="wizard-step-number">3</span>
+							<span class="wizard-step-caption">
+								Đối tượng
+								<span class="wizard-step-description">Quản lý người dự thi</span>
+							</span>
+						</li>
+						<li data-target="#wizard-finish">
+							<span class="wizard-step-number">4</span>
+							<span class="wizard-step-caption">Hoàn thành</span>
+						</li>
+					</ul> <!-- / .wizard-steps -->
+				</div> <!-- / .wizard-wrapper -->
+				<div class="wizard-content panel no-margin no-border-hr no-border-b no-padding-hr">
+					<form class="wizard-pane form-bordered" id="wizard-info">
+						<div class="form-group no-padding-t no-border-t panel-padding-h">
+							<div class="has-feedback">
+								<input type="text" name="contestName" placeholder="Tên cuộc thi" class="form-control">
+								<i class="fa fa-user form-control-feedback"></i>
+							</div>
+						</div>
+						
+						<div class="border-t">
+							<div class="row panel-padding-h">
+								<div class="col-xs-6">
+									<div class="form-group no-border">
+										<div class="has-feedback">
+											<input type="text" name="contestOrg" placeholder="Đơn vị tổ chức" class="form-control">
+											<i class="fa fa-user form-control-feedback"></i>
+										</div>
+									</div>
+								</div>
+								<div class="col-xs-6">
+									<div class="form-group no-border">
+										<div class="has-feedback">
+											<input type="email" name="contestEmail" placeholder="Email" class="form-control">
+											<i class="fa fa-envelope form-control-feedback"></i>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group panel-padding-h">
+							<div class="has-feedback">
+								<input type="text" name="contestAddress" placeholder="Địa chỉ" class="form-control">
+								<i class="fa fa-envelope form-control-feedback"></i>
+							</div>
+						</div>
+
+						<hr>
+						<div class="panel-padding-h">
+							<button type="submit" class="btn btn-primary pull-right">Bước tiếp</button>
+						</div>
+					</form> <!-- / .wizard-pane -->
+
+					<form class="wizard-pane form-bordered" id="wizard-datetime" style="display: none;">
+						<div class="form-group no-padding-t no-border-t panel-padding-h">
+							<label class="col-sm-3 control-label">Thời gian</label>
+							<div class="col-sm-9">
+								<h6 class="text-muted text-semibold text-xs" style="margin:20px 0 10px 0;">Bắt đầu</h6>
+								<div class="input-group date">
+									<input type="text" class="form-control" id="bs-timepicker-start" name="timeStart"><span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
+								</div>
+								<h6 class="text-muted text-semibold text-xs" style="margin:20px 0 10px 0;">Kết thúc</h6>
+								<div class="input-group date">
+									<input type="text" class="form-control" id="bs-timepicker-end" name="timeEnd"><span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group panel-padding-h">
+							<label class="col-sm-3">Ngày tháng</label>
+							<div class="col-sm-9">
+								<div class="input-daterange input-group" id="bs-datepicker-range">
+									<input type="text" class="input-sm form-control" name="dateStart" placeholder="Từ ngày">
+									<span class="input-group-addon">tới</span>
+									<input type="text" class="input-sm form-control" name="dateEnd" placeholder="Kết thúc">
+								</div>
+							</div>
+						</div>
+
+						<hr>
+
+						<div class="pull-right panel-padding-h">
+							<button type="button" class="btn wizard-prev-step-btn">Trở lại</button>&nbsp;&nbsp;
+							<button type="submit" class="btn btn-primary ">Bước tiếp</button>
+						</div>
+					</form> <!-- / .wizard-pane -->
+
+					<form class="wizard-pane panel-padding-h" id="wizard-subject" style="display: none;">
+						<div class="form-group no-padding-t no-border-t panel-padding-h">
+							<label class="col-sm-3">Thêm đối tượng</label>
+							<div class="col-sm-9">
+								<h6 class="text-light-gray text-semibold text-xs" style="margin:20px 0 10px 0;">Chọn đối tượng</h6>
+
+								<select multiple="multiple" id="jquery-select2-multiple" class="form-control">
+									<optgroup label="Alaskan/Hawaiian Time Zone">
+										<option value="AK">Alaska</option>
+										<option value="HI">Hawaii</option>
+									</optgroup>
+									<optgroup label="Pacific Time Zone">
+										<option value="CA">California</option>
+										<option value="NV">Nevada</option>
+										<option value="OR">Oregon</option>
+										<option value="WA">Washington</option>
+									</optgroup>
+								</select>
+
+								<br/>
+								<h6 class="text-light-gray text-semibold text-xs" style="margin:20px 0 10px 0;">Cho phép làm nhiều lần</h6>
+								<input type="checkbox" id="switcher-example-3">
+							</div>
+						</div>
+
+						<hr class="panel-wide">
+
+						<div class="pull-right">
+							<button class="btn wizard-prev-step-btn">Trở lại</button>
+							<button class="btn btn-primary wizard-next-step-btn">Bước tiếp</button>
+						</div>
+					</form> <!-- / .wizard-pane -->
+
+					<div class="wizard-pane text-center panel-padding" id="wizard-finish" style="display: none;">
+						<i class="fa fa-check text-success text-slg"></i><br><br>
+						<span class="text-lg text-slim text-muted">THIẾT LẬP THÀNH CÔNG</span>
+						<button class="btn btn-primary" style="margin: 25px auto;display: block;">Tạo</button>
+					</div> <!-- / .wizard-pane -->
+
+				</div> <!-- / .wizard-content -->
+			</div> <!-- / .wizard -->
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	init.push(function () {
+		var startTime= {
+			minuteStep: 1,
+			showSeconds: true,
+			showMeridian: false,
+			showInputs: false,
+			orientation: $('body').hasClass('right-to-left') ? { x: 'right', y: 'auto'} : { x: 'auto', y: 'auto'}
+		}
+		$('#bs-timepicker-start').timepicker(startTime);
+
+		var endTime = {
+			minuteStep: 1,
+			showSeconds: true,
+			showMeridian: false,
+			showInputs: false,
+			orientation: $('body').hasClass('right-to-left') ? { x: 'right', y: 'auto'} : { x: 'auto', y: 'auto'}
+		}
+		$('#bs-timepicker-end').timepicker(endTime);
+
+		var dateContest = {
+			orientation: $('body').hasClass('right-to-left') ? "auto right" : 'auto auto'
+		}
+		$('#bs-datepicker-range').datepicker(dateContest);
+
+		$("#jquery-select2-multiple").select2({
+			placeholder: "Chọn..."
+		});
+
+		$('#switcher-example-3').switcher({
+			theme: 'modern'
+		});
+
+		$('#wizard-forms').pixelWizard({
+			onFinish: function () {
+				// Disable changing step. To enable changing step just call this.unfreeze()
+				this.freeze();
+			}
+		});
+		$('#wizard-forms .wizard-prev-step-btn').on('click', function () {
+			$('#wizard-forms').pixelWizard('prevStep');
+			return false;
+		});
+
+		$("#wizard-info").validate({
+			ignore: '.ignore',
+			focusInvalid: true,
+			rules: {
+				'contestName': {
+					required: true
+				},
+				'contestOrg': {
+					required: true
+				},
+				'contestEmail': {
+					required: true
+				},
+				'contestAddress': {
+					required: true
+				},
+			}
+		});
+		$('#wizard-info').on('submit', function () {
+			if ($(this).valid()) {
+				$('#wizard-forms').pixelWizard('nextStep');
+			}
+			return false;
+		});
+
+
+		$("#wizard-datetime").validate({
+			ignore: '.ignore, .select2-input',
+			focusInvalid: true,
+			rules: {
+				'dateStart': {
+					required: true
+				},
+				'dateEnd': {
+					required: true
+				},
+				'timeStart': {
+					required: true
+				},
+				'timeEnd': {
+					required: true
+				},
+			}
+		});
+		$('#wizard-datetime').on('submit', function () {
+			if ($(this).valid()) {
+				$('#wizard-forms').pixelWizard('nextStep');
+			}
+			return false;
+		});
+
+		// Credit card page
+
+		var $wcc = $('#wizard-subject')
+		$wcc.on('submit', function () {
+			if ($(this).valid()) {
+				$('#wizard-forms').pixelWizard('nextStep');
+			}
+			return false;
+		});
+
+		// Finish page
+
+		$('#wizard-finish button').click(function () {
+			$(this).parent().find('.text-lg').text('HOÀN THÀNH!');
+			$(this).parent().find('.fa-check').removeClass('fa-check').addClass('fa-check-circle');
+			$(this).remove();
+			$.post("http://localhost:3000/manager/create-contest",$('#wizard-info, #wizard-datetime, #wizard-subject').serialize());
+			$('#wizard-forms').pixelWizard('nextStep');
+			return false;
+		});
+
+	})
+	window.LanderApp.start(init);
+</script>

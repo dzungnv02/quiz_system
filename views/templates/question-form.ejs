@@ -1,0 +1,238 @@
+<div id="question-<%= id %>" data-draft="<%= draft %>" class="hidden">
+	<ul class="nav nav-tabs nav-tabs-xs">
+		<li class="active">
+			<a href="#true-false-form<%= id %>" data-toggle="tab">Đúng-Sai</a>
+		</li>
+		<li>
+			<a href="#one-answer-form<%= id %>" data-toggle="tab">Một đáp án</a>
+		</li>
+		<li>
+			<a href="#multi-answer-form<%= id %>" data-toggle="tab">Nhiều đáp án</a>
+		</li>
+		<li>
+			<a href="#fill-in-form<%= id %>" data-toggle="tab">Điền từ</a>
+		</li>
+		<!-- <li>
+			<a href="#drag-answer-form<%= id %>" data-toggle="tab">Kéo thả</a>
+		</li>
+		<li>
+			<a href="#matching-answer-form<%= id %>" data-toggle="tab">Nối câu</a>
+		</li> -->
+	</ul>
+	<div class="panel">
+		<div class="tab-content question-form<%= id %>">
+			<form id="true-false-form<%= id %>" class="form-horizontal widget-comments panel-body tab-pane fade active in">
+				<div class="form-group">
+					<label class="col-sm-2 control-label">Câu hỏi</label>
+					<div class="col-sm-10">
+						<textarea rows="3" class="elastic form-control" data-input="question-input" name="question"><%= question %></textarea>
+						<p class="help-block">Điền câu hỏi vào khung.<span></span></p>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">Đáp án</label>
+					<div class="col-sm-10">
+						<label class="checkbox-inline checkbox-success">
+						<% if(answers) { %>
+							<input type="checkbox" data-input="answer" class="styled" <%= answers[0].is_correct ? 'checked' : '' %>>Đúng
+						<%	} else { %>
+							<input type="checkbox" data-input="answer" class="styled">Đúng
+						<%	} %>
+						</label>
+					</div>
+				</div>
+			</form>
+
+			<form id="one-answer-form<%= id %>" class="form-horizontal widget-comments panel-body tab-pane fade">
+				<div class="form-group">
+					<label class="col-sm-2 control-label">Câu hỏi</label>
+					<div class="col-sm-10 has-feedback">
+						<textarea rows="3" class="elastic form-control" data-input="question-input" name="question"><%= question %></textarea>
+						<i data-action="put-attachment" class="icon-link form-control-feedback"></i>
+						<p class="help-block">Điền câu hỏi vào khung.<span></span></p>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">Đáp án</label>
+					<div class="col-sm-10">
+					<% if(answers && form == 'one-answer') {
+						for(var i = 0;i < answers.length; i++) { %>
+						<div class="input-group has-feedback">
+							<label class="input-group-addon radio-success">
+								<input type="radio" data-input="answer" name="answer<%= id %>" class="styled" <%= answers[i].is_correct ? 'checked' : '' %>>
+							</label>
+							<input type="text" data-input="answers-input" class="form-control" value="<%= answers[i].text %>" placeholder="Lựa chọn..">
+							<i data-action="put-attachment" class="icon-link form-control-feedback"></i>
+						</div>
+					<%	}} else { %>
+						<div class="input-group has-feedback">
+							<span class="input-group-addon radio-success">
+								<input type="radio" data-input="answer" name="answer<%= id %>" class="styled" checked>
+							</span>
+							<input type="text" data-input="answers-input" class="form-control" placeholder="Lựa chọn..">
+							<i data-action="put-attachment" class="icon-link form-control-feedback"></i>
+						</div>
+						<div class="input-group has-feedback">
+							<span class="input-group-addon radio-success">
+								<input type="radio" data-input="answer" name="answer<%= id %>" class="styled">
+							</span>
+							<input type="text" data-input="answers-input" class="form-control" placeholder="Lựa chọn..">
+							<i data-action="put-attachment" class="icon-link form-control-feedback"></i>
+						</div>
+					<% } %>
+						<a href="javascript:" data-action="add-input">Thêm lựa chọn</a>
+					</div>
+				</div>
+			</form>
+
+			<form id="multi-answer-form<%= id %>" class="form-horizontal widget-comments panel-body tab-pane fade">
+				<div class="form-group">
+					<label class="col-sm-2 control-label">Câu hỏi</label>
+					<div class="col-sm-10 has-feedback">
+						<textarea rows="3" class="elastic form-control" data-input="question-input" name="question"><%= question %></textarea>
+						<p class="help-block">Điền câu hỏi vào khung.<span></span></p>
+						<i data-action="put-attachment" class="icon-link form-control-feedback"></i>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">Đáp án</label>
+					<div class="col-sm-10">
+					<% if(answers && form == 'multi-answer') {
+						for(var i = 0;i < answers.length; i++) { %>
+						<div class="input-group has-feedback">
+							<span class="input-group-addon checkbox-success">
+								<input type="checkbox" data-input="answer" name="answer<%= id %>" class="styled" <%= answers[i].is_correct ? 'checked' : '' %>>
+							</span>
+							<input type="text" data-input="answers-input" class="form-control" value="<%= answers[i].text %>" placeholder="Lựa chọn..">
+							<i data-action="put-attachment" class="icon-link form-control-feedback"></i>
+						</div>
+					<%	}} else { %>
+						<div class="input-group has-feedback">
+							<span class="input-group-addon checkbox-success">
+								<input type="checkbox" data-input="answer" name="answer<%= id %>" class="styled" checked>
+							</span>
+							<input type="text" data-input="answers-input" class="form-control" placeholder="Lựa chọn..">
+							<i data-action="put-attachment" class="icon-link form-control-feedback"></i>
+						</div>
+						<div class="input-group has-feedback">
+							<span class="input-group-addon checkbox-success">
+								<input type="checkbox" data-input="answer" name="answer<%= id %>" class="styled">
+							</span>
+							<input type="text" data-input="answers-input" class="form-control" placeholder="Lựa chọn..">
+							<i data-action="put-attachment" class="icon-link form-control-feedback"></i>
+						</div>
+					<% } %>
+						<a href="javascript:" data-action="add-input">Thêm lựa chọn</a>
+					</div>
+				</div>
+			</form>
+
+			<form id="fill-in-form<%= id %>" class="form-horizontal widget-comments panel-body tab-pane fade">
+				<div class="form-group">
+					<label class="col-sm-2 control-label">Câu hỏi</label>
+					<div class="col-sm-10">
+						<textarea rows="3" class="elastic form-control" data-input="question-input" name="question"><%= question %></textarea>
+						<p class="help-block">Điền câu hỏi vào khung, sử dụng (#câu trả lời#) để tạo ô trống.</p>
+					</div>
+				</div>
+			</form>
+
+			<!-- <form id="drag-answer-form<%= id %>" class="form-horizontal widget-comments panel-body tab-pane fade">
+				<div class="form-group">
+					<label class="col-sm-2 control-label">Câu hỏi</label>
+					<div class="col-sm-10">
+						<textarea rows="3" class="elastic form-control" data-input="question-input" name="question"><%= question %></textarea>
+						<p class="help-block">Điền câu hỏi vào khung.<span></span></p>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">Đáp án</label>
+					<div class="col-sm-10">
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" data-input="answer" class="px"> <span class="lbl"><input type="text" data-input="answers-input" class="form-control" placeholder="Lựa chọn.."></span>
+							</label>
+						</div>
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" data-input="answer" class="px"> <span class="lbl"><input type="text" data-input="answers-input" class="form-control" placeholder="Lựa chọn.."></span>
+							</label>
+						</div>
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" data-input="answer" class="px"> <span class="lbl"><input type="text" data-input="answers-input" class="form-control" placeholder="Lựa chọn.."></span>
+							</label>
+						</div>
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" data-input="answer" class="px"> <span class="lbl"><input type="text" data-input="answers-input" class="form-control" placeholder="Lựa chọn.."></span>
+							</label>
+						</div>
+					</div>
+				</div>
+			</form>
+
+			<form id="matching-answer-form<%= id %>" class="form-horizontal widget-comments panel-body tab-pane fade">
+				<div class="form-group">
+					<label class="col-sm-2 control-label">Câu hỏi</label>
+					<div class="col-sm-10">
+						<textarea rows="3" class="elastic form-control" data-input="question-input" name="question"><%= question %></textarea>
+						<p class="help-block">Điền câu hỏi vào khung.<span></span></p>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">Đáp án</label>
+					<div class="col-sm-5">
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" name="checkbox1" class="px"> <span class="lbl"><input type="text" class="form-control" placeholder="Lựa chọn.."></span>
+							</label>
+						</div>
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" name="checkbox1" class="px"> <span class="lbl"><input type="text" class="form-control" placeholder="Lựa chọn.."></span>
+							</label>
+						</div>
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" name="checkbox1" class="px"> <span class="lbl"><input type="text" class="form-control" placeholder="Lựa chọn.."></span>
+							</label>
+						</div>
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" name="checkbox1" class="px"> <span class="lbl"><input type="text" class="form-control" placeholder="Lựa chọn.."></span>
+							</label>
+						</div>
+					</div>
+					<div class="col-sm-5">
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" name="checkbox1" class="px"> <span class="lbl"><input type="text" class="form-control" placeholder="Lựa chọn.."></span>
+							</label>
+						</div>
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" name="checkbox1" class="px"> <span class="lbl"><input type="text" class="form-control" placeholder="Lựa chọn.."></span>
+							</label>
+						</div>
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" name="checkbox1" class="px"> <span class="lbl"><input type="text" class="form-control" placeholder="Lựa chọn.."></span>
+							</label>
+						</div>
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" name="checkbox1" class="px"> <span class="lbl"><input type="text" class="form-control" placeholder="Lựa chọn.."></span>
+							</label>
+						</div>
+					</div>
+				</div>
+			</form> -->
+		</div>
+	</div>
+	<script>
+		$('.styled').uniform({ radioClass: 'choice', selectAutoWidth: false });
+		$('.elastic').autosize();
+		$('a[href="#<%= form %>-form<%= id %>"').trigger('click');
+	</script>
+</div>
