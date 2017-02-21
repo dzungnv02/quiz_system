@@ -639,7 +639,7 @@ MongoClient.connect(database_server, function(err, db) {
 	//   })
 	// });
 
-	app.get('testtemplate',isAuthenticated, function (req, res){
+	app.get('/testtemplate',isAuthenticated, function (req, res){
 		res.render('layout', {
 			page: 'main',
 			body_class: '',
