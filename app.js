@@ -644,7 +644,8 @@ MongoClient.connect(database_server, function(err, db) {
 			page: 'main',
 			body_class: '',
 			content: 'frontend/test',
-			title: 'Test template'
+			title: 'Test template',
+			username: req.user.username,
 		})
 	});
 
