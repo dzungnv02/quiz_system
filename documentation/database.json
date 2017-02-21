@@ -7,7 +7,7 @@
 		"is_admin": false,
 		"is_creator": false, // true nếu là người tạo bài kiểm tra
 	},
-	"group_user": {
+	"user_group": {
 		"_id": "589dc0e459a1cb0fac142656",
 		"name": "", // tên group
 		"users": [], // array id users
@@ -43,6 +43,7 @@
 		"shuffle": true, // cho phép random câu hỏi và câu trả lời
 		"done": false, // true khi không có lỗi hay thông tin điền thiếu khi tạo bài
 		"tags": [], // array các môn học trong bài kiểm tra, vd: Toán 9, Toán 8
+		"groups": [], // array _id group
 		"link": "", // id chia sẻ bài, _id của exam_online tương ứng
 		"show_score": false, // cho phép xem điểm khi nộp bài
 		"show_hint": false, // cho phép xem đáp án đúng khi nộp bài
