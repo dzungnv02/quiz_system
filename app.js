@@ -639,6 +639,15 @@ MongoClient.connect(database_server, function(err, db) {
 	//   })
 	// });
 
+	app.get('testtemplate',isAuthenticated, function (req, res){
+		res.render('layout', {
+			page: 'main',
+			body_class: '',
+			content: 'frontend/test',
+			title: 'Test template'
+		})
+	});
+
 	app.get('/test/:link', isAuthenticated, function(req, res) {
 		let link = req.params.link;
 		if (link) {
