@@ -3307,6 +3307,14 @@ body > .jGrowl {
   margin: 0 -1px;
 }
 
+.select2-results__option[aria-selected=true] {
+  display: none;
+}
+
+
+
+
+
 /*===== Tags Input plugin =====*/
 
 .tagsinput {
@@ -6039,4 +6047,7 @@ li.plupload_droptext {
 }
 .table-simple , .table-simple td {
   border: 0 !important
+}
+.table-simple .datatable-scroll {
+  border-top: 1px solid #ddd;
 }

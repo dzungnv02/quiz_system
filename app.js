@@ -65,7 +65,7 @@ MongoClient.connect(database_server, function(err, db) {
   console.log("Connected correctly to server.");
 
   var User = db.collection('user'),
-			Group = db.collection('group_user'),
+			Group = db.collection('user_group'),
 			Term = db.collection('term'),
 			Exam = db.collection('exam'),
 			Question = db.collection('question'),
@@ -157,7 +157,17 @@ MongoClient.connect(database_server, function(err, db) {
 			},
 			function(callback) {
 				Exam.find().toArray(function(err, exams) {
-					callback(err, exams)
+					if (exams) {
+						exams.forEach(function(exam, i, array) {
+							find_group_by_id(exam.groups, function(err, data) {
+								array[i].groups = data;
+								if (i === array.length - 1) {
+									callback(err, array)
+								}
+							})
+						})
+					} else callback(err, [])
+					
 				})
 			}
 		],
@@ -197,7 +207,8 @@ MongoClient.connect(database_server, function(err, db) {
 
 // GROUP
 	app.get('/manager/group', isCreator, function (req, res) {
-		Group.find({creator: req.user.username}).toArray(function(err, groups) {
+		let user = get_user_in_session(req);
+		Group.find({creator: objectId(user._id)}).toArray(function(err, groups) {
 			if(err) res.send({ok: false, error: err})
 			else {
 				res.render('layout', {
@@ -213,13 +224,14 @@ MongoClient.connect(database_server, function(err, db) {
 	});
 	app.post('/manager/group-create', isCreator, function (req, res) {
 		let data = req.body;
+		let user = get_user_in_session(req);
 		if (data.title) {
 			let insert = {
 				name: req.body.title,
 				users: [],
 				exams: [],
 				join_requests: [],
-				creator: req.user.username,
+				creator: objectId(user._id),
 			};
 			Group.insertOne(insert, function(err, obj){
 				res.send({ ok:true})
@@ -228,11 +240,20 @@ MongoClient.connect(database_server, function(err, db) {
 			
 	});
 	app.post('/manager/group-delete', isCreator, function (req, res) {
-		console.log(req.body)
 		if (req.body.id) {
 			Group.remove({_id: objectId(req.body.id)}, function(err, obj) {
 				res.send({ok: true})
 			})
+		}
+	});
+	app.post('/manager/group-update', isCreator, function (req, res) {
+		let data = req.body;
+		if (data.id && data.link) {
+			Group.update({_id: objectId(data.id)}, {$push: {exams: objectId(data.link)}}, function(err, obj) {
+				res.send({ok: true})
+			})
+		} else if(data.id) {
+
 		}
 	});
 	app.post('/manager/group-join', isAuthenticated, function (req, res) {
@@ -261,8 +282,14 @@ MongoClient.connect(database_server, function(err, db) {
 	});
 	app.post('/manager/group-requests', isCreator, function (req, res) {
 		let data = req.body;
-		if (data.id) {
-			Group.findOne({_id: objectId(data.id)}, function(err, group){
+		let target = {_id: objectId(data.id)};
+		if(data.accept && data.id) {
+			Group.update(target, {$push: {users: objectId(data.user)}, $pull: {join_requests: objectId(data.user)}}, function(err) {
+				if(err) res.send({ok: false, error: err})
+				else res.send({ ok: true})
+			})
+		} else if (data.id) {
+			Group.findOne(target, function(err, group){
 				if (group) {
 					find_user_by_id(group.join_requests, function(err, users) {
 						if(err) res.send({ok: false, error: err});
@@ -275,10 +302,24 @@ MongoClient.connect(database_server, function(err, db) {
 	app.post('/manager/group-users', isCreator, function (req, res) {
 		let data = req.body;
 		if (data.id) {
-			Group.findOne({_id: data.id}, function(err, group){
-				res.send({ ok:true, users: group.users})
+			Group.findOne({_id: objectId(data.id)}, function(err, group){
+				if (group) {
+					find_user_by_id(group.users, function(err, users) {
+						if(err) res.send({ok: false, error: err});
+						if (users) res.send({ ok:true, users: users})
+					})
+				} else res.send({ ok: false, error: errors.not_found})
 			})
 		} else res.send({ ok: false, error: errors.not_enough_info})
+	});
+	app.get('/manager/group-list', isCreator, function (req, res) {
+		let user = get_user_in_session(req);
+		Group.find({creator: objectId(user._id)}).toArray(function(err, groups) {
+			if(err) res.send({ok: false, error: err})
+			else if (groups) {
+				res.send({ ok:true, groups: groups})
+			} else res.send({ ok: false, error: errors.not_found})
+		});
 	});
 // END GROUP
 
@@ -302,7 +343,7 @@ MongoClient.connect(database_server, function(err, db) {
 			timeEnd: req.body.timeEnd,
 			dateStart: req.body.dateStart,
 			dateEnd: req.body.dateEnd,
-			creator: req.user.username,
+			creator: objectId(req.user._id),
 		};
 		Term.insert(data, function(err, obj){
 			res.send({ ok:true})
@@ -340,32 +381,30 @@ MongoClient.connect(database_server, function(err, db) {
 			shuffle: req.body.shuffle,
 			done: false,
 			tags: [],
+			groups: [],
 			link: '',
 			show_score: false,
 			show_hint: false,
 			do_again: false,
-			creator: req.user.username,
+			creator: objectId(req.user._id),
 		};
 		Exam.insertOne(data, function(err, obj){
 			res.send({ ok:true, exam: obj.insertedId})
 		});
 	});
 	app.post('/manager/exam-update/', isAuthenticated, function (req, res) {
-		if (req.body.id) {
-			let shuffle = false;
-			let id = req.body.id;
-			let data = req.body;
+		let data = req.body;
+		if (data.id) {
+			let id = data.id;
 			delete data.id;
-			if (data.shuffle == 'true') data.shuffle = true
-			else data.shuffle = false;
-			if (data.score == 'true') data.show_score = true
-			else data.show_score = false;
-			if (data.hint == 'true') data.show_hint = true
-			else data.show_hint = false;
-			if (data.repeat == 'true') data.do_again = true
-			else data.do_again = false;
+			if (data.shuffle == 'true') data.shuffle = true;
+			if (data.score == 'true') data.show_score = true;
+			if (data.hint == 'true') data.show_hint = true;
+			if (data.repeat == 'true') data.do_again = true;
 			if(data.time) data.time = parseInt(data.time);
-			Exam.update({_id: objectId(id)} , {$set: data}, res.send(alertCallback))
+			Exam.update({_id: objectId(id)} , {$set: data}, function(err){
+				res.send({ok:true})
+			})
 		}
 	});
 	app.post('/manager/exam-delete/', isAuthenticated, function (req, res) {
@@ -392,19 +431,10 @@ MongoClient.connect(database_server, function(err, db) {
 		let data = req.body;
 		if (data.id) {
 			if(data.cancel && data.link) {
-				Exam.update({_id: objectId(data.id)}, {$set: {link: ''}});
-				Online.remove({_id: data.link});
-				res.send(null)
-			} else {
-				Exam.findOne({_id: objectId(data.id)}, function(err, exam) {
-					if (exam) {
-						generate_exam_online(exam._id, data, function(link) {
-							Exam.update({_id: objectId(exam._id)} , {$set: {link: link}})
-							res.send({link: link})
-						})
-					} else res.send(null)
+				exam_cancel_share(data, function(obj) {
+					res.send(obj)
 				})
-			}
+			} else exam_share(data, function(obj) { res.send(obj) })
 		}
 	});
 // END EXAM
@@ -422,7 +452,7 @@ MongoClient.connect(database_server, function(err, db) {
 				draft: true,
 				tags: [],
 				attachment: null,
-				creator: req.user.username,
+				creator: objectId(req.user._id),
 			};
 			Question.insertOne(data, function(err, obj) {
 				let id = obj.insertedId;
@@ -446,7 +476,9 @@ MongoClient.connect(database_server, function(err, db) {
 		let id = data.id;
 		delete data.exam;
 		delete data.id;
-		Question.update({_id: objectId(id)}, {$set: data}, res.send(alertCallback))
+		Question.update({_id: objectId(id)}, {$set: data}, function(err){
+				res.send({ok:true})
+			})
 	});
 	app.post('/manager/question-delete/', isAuthenticated, function (req, res) {
 		let data = req.body;
@@ -468,8 +500,8 @@ MongoClient.connect(database_server, function(err, db) {
 	      }], function(err) {
 		    	if (err) return next(err);
 		  });
-		  res.send(alertCallback())
-		} else res.send(alertCallback(false))
+		  res.send({ok:true})
+		} else res.send({ok: false})
 	});
 	app.post('/manager/question-remove/', isAuthenticated, function (req, res) {
 		let data = req.body;
@@ -479,11 +511,11 @@ MongoClient.connect(database_server, function(err, db) {
 				doc.questions.splice(data.question, 1);
 				Exam.update(target, {$set: {questions: doc.questions}})
 			})
-		  res.send(alertCallback())
-		} else res.send(alertCallback(false))
+		  res.send({ok:true})
+		} else res.send({ok: false})
 	});
 	app.post('/manager/question-search/', isAuthenticated, function (req, res) {
-		Question.find({creator: req.user.username}).toArray(function(err, questions){
+		Question.find({creator: objectId(req.user._id)}).toArray(function(err, questions){
 			res.send(questions)
 		});
 	});
@@ -513,14 +545,16 @@ MongoClient.connect(database_server, function(err, db) {
 				attachment: null
 			};
 
-			Question.update({_id: objectId(req.body.question)}, {$push: {answers: data}}, res.send(alertCallback))
-		} else res.send(alertCallback(false))
+			Question.update({_id: objectId(req.body.question)}, {$push: {answers: data}}, function(err){
+				res.send({ok:true})
+			})
+		} else res.send({ok: false})
 	});
 	app.post('/manager/answer-update/', isAuthenticated, function (req, res) {
 		let alert = { ok: false};
 		if (req.body.id) {
 			alert = update_answers({_id: objectId(req.body.id)},req.body);
-		} else alert = alertCallback(false)
+		} else alert = {ok: false}
 		res.send(alert);
 	});
 	app.post('/manager/answer-delete/', isAuthenticated, function (req, res) {
@@ -529,7 +563,7 @@ MongoClient.connect(database_server, function(err, db) {
 				doc[0].answers.splice(req.body.answer, 1);
 				Question.update(target, {$set: {answers: doc[0].answers}})
 			})
-		} else res.send(alertCallback(false))
+		} else res.send({ok: false})
 	});
 // END ANSWER
 
@@ -586,13 +620,12 @@ MongoClient.connect(database_server, function(err, db) {
 	app.post('/score-view/', isAuthenticated, function (req, res) {
 		let data = req.body;
 		let user = get_user_in_session(req);
-		console.log(data.answers);
 		if(data.id && data.answers) {
 			let user_anwsers = data.answers;
 			let score = 0;
 			Online.findOne({_id: data.id}, function(err, doc) {
 				if (err) res.send({ ok:false, err: err})
-				else {
+				else if(doc) {
 					for (let i = 0; i < doc.users.length; i++) {
 						let u = doc.users[i];
 						if (user._id == u.user) {
@@ -604,7 +637,7 @@ MongoClient.connect(database_server, function(err, db) {
 							res.send({ ok:true, score: score.toFixed(2)})
 						}
 					}
-				}
+				} else res.send({ ok:false, err: errors.not_found})
 			})
 		} else res.send({ ok:false, err: errors.not_found})
 	});
@@ -639,16 +672,6 @@ MongoClient.connect(database_server, function(err, db) {
 	//   })
 	// });
 
-	app.get('/testtemplate/',isAuthenticated, function (req, res){
-		res.render('layout', {
-			page: 'main',
-			body_class: '',
-			content: 'frontend/test',
-			title: 'Test template',
-			username: req.user.username,
-		})
-	});
-
 	app.get('/test/:link', isAuthenticated, function(req, res) {
 		let link = req.params.link;
 		if (link) {
@@ -681,7 +704,7 @@ MongoClient.connect(database_server, function(err, db) {
 											user: user._id,
 											data: user_data
 										}
-										update_user_exam_online(link, insert, function(result) {
+										exam_online_update_user(link, insert, function(result) {
 
 										})
 									}
@@ -691,7 +714,7 @@ MongoClient.connect(database_server, function(err, db) {
 										user: user._id,
 										logs: [user_data]
 									}
-									push_user_exam_online(link, insert, function(result) {
+									exam_online_add_user(link, insert, function(result) {
 
 									})
 								}
@@ -730,13 +753,25 @@ MongoClient.connect(database_server, function(err, db) {
 		 		callback(err, users)
 		 	})
 		} else {
-			User.find({_id: objectId(id)}).toArray(function(err, user) {
+			User.findOne({_id: objectId(id)},function(err, user) {
 		 		callback(err, user)
 		 	})
 		}
 	};
 
-	var generate_exam_online = function(id, data, _callback) {
+	var find_group_by_id = function(id, callback) {
+		if (Array.isArray(id)) {
+			Group.find({_id: {$in: id}}).toArray(function(err, groups) {
+		 		callback(err, groups)
+		 	})
+		} else {
+			Group.findOne({_id: objectId(id)}, function(err, group) {
+		 		callback(err, group)
+		 	})
+		}
+	};
+
+	var exam_online_generate = function(id, data, _callback) {
 		let exam_online_id = randomStringAsBase64Url(20);
 		let insert = {
 			_id: exam_online_id,
@@ -748,17 +783,92 @@ MongoClient.connect(database_server, function(err, db) {
 		})
 	};
 
-	var push_user_exam_online = function(id, data, _callback) {
-		Online.update({_id: id}, {$push: {users: data}}, function(err, obj) {
+	var exam_online_add_user = function(id, data, _callback) {
+		Online.update({_id: objectId(id)}, {$push: {users: data}}, function(err, obj) {
 			if(err) _callback(err);
 			_callback(true)
 		})
 	};
 
-	var update_user_exam_online = function(id, data, _callback) {
-		Online.update({_id: id, 'users.user': data.user},{$push: {'users.$.logs': data.data}}, function(err, obj) {
+	var exam_online_update_user = function(id, data, _callback) {
+		Online.update({_id: objectId(id), 'users.user': data.user},{$push: {'users.$.logs': data.data}}, function(err, obj) {
 			if(err) _callback(err);
 			_callback(true)
+		})
+	};
+
+	var	group_add_exam = function(exam, group, callback) {
+		let target;
+		if (Array.isArray(group)) target = {_id: {$in: group}}
+		else target = {_id: objectId(group)}
+		Group.update(target, {$push: {exams: objectId(exam)}}, {multi: true}, callback)
+	};
+
+	var	group_remove_exam = function(exam, group, callback) {
+		let target;
+		if (Array.isArray(group)) target = {_id: {$in: group}}
+		else target = {_id: objectId(group)};
+		Group.update(target, {$pull: {exams: objectId(exam)}}, {multi: true}, callback)
+	};
+
+	var exam_add_group = function(exam, group, callback) {
+		let query;
+		if (group === '' || group === []) {
+			query = {$set: {groups: []}};
+			group = [];
+		} else if (Array.isArray(group)) {
+			for (var i = 0; i < group.length; i++) group[i] = objectId(group[i]);
+			query = {$set: {groups: group}}
+		}
+
+		let group_remove_exam_list = get_element_different(exam.groups, group);
+		if(group_remove_exam_list) group_remove_exam(exam._id, group_remove_exam_list);
+
+		Exam.update({_id: objectId(exam._id)} , query, function(err) {
+			if(exam.link) {
+				if(exam.start_share) group_add_exam(exam._id, exam.groups, callback)
+				else {
+					let group_push_exam_list = get_element_different(group, exam.groups);
+					group_add_exam(exam._id, group_push_exam_list, callback)
+				}
+			}
+		})
+	};
+
+	var exam_remove_group = function(exam, group, callback) {
+		Exam.update({_id: objectId(exam)}, {$pull: {groups: objectId(group)}}, callback)
+	};
+
+	var exam_share = function(data, callback) {
+		Exam.findOne({_id: objectId(data.id)}, function(err, exam) {
+			if (exam) {
+				if (data.group != undefined || data.group != null) {
+					exam_add_group(exam, data.group, callback({ok:true}))
+				} else {
+					exam_online_generate(exam._id, data, function(link) {
+						Exam.update({_id: objectId(exam._id)}, {$set: {link: link}}, function() {
+							exam.link = link;
+							exam.start_share = true;
+							exam_add_group(exam, exam.groups, callback({link: link}))
+						})
+					})
+				}
+			} else callback({ ok: false, error: errors.not_found})
+		})
+	};
+
+	var exam_cancel_share = function(data, callback) {
+		Exam.findOne({_id: objectId(data.id)}, function(err, exam) {
+			if (exam) {
+				Online.remove({_id: data.link});
+				let query = {$set: {link: ''}} , group = exam.groups;
+				if (group) {
+					query = {$set: {link: ''}, $pull: {groups: group}};
+					Group.update({_id: {$in: group}}, {$pull: {exams: objectId(exam._id)}}, {multi: true})
+				}
+				Exam.update({_id: objectId(exam._id)}, query);
+				callback({ ok: true})
+			} else callback({ ok: false, error: errors.not_found})
 		})
 	};
 
@@ -780,9 +890,9 @@ MongoClient.connect(database_server, function(err, db) {
 
 	var find_questions = function(id, _callback) {
 		if(Array.isArray(id)) {
-		 Question.find({_id: {$in: id}}).toArray(function(err, questions) {
+		 	Question.find({_id: {$in: id}}).toArray(function(err, questions) {
 		 		_callback(null, questions);
-		 })
+		 	})
 		}
 	};
 
@@ -879,16 +989,8 @@ MongoClient.connect(database_server, function(err, db) {
 		})
 	};
 
-	var get_questions_by_username = function(username, _callback) {
-		Question.find({creator: username}).toArray(_callback)
-	};
-
-	var alertCallback = function(err) {
-		var alert = { ok: false }
-		if (err) {
-			console.log(err)
-		} else alert.ok = true
-		return alert;
+	var get_questions_by_user = function(user, _callback) {
+		Question.find({creator: objectId(user)}).toArray(_callback)
 	};
 
 	var api_get_question_reformat = function(questions) {
@@ -990,6 +1092,19 @@ MongoClient.connect(database_server, function(err, db) {
 		});
 		if (shuffle_exam) shuffle2(res.questions,res.answers);
 		return res;
+	};
+
+	function get_element_different(arr_old, arr_new) {
+		let res = [];
+		if (arr_new == []) return arr_old;
+		for (let i = 0; i < arr_old.length; i++) {
+			let checker = true;
+	    for (let j = 0; j < arr_new.length; j++) {
+	      if (arr_old[i].equals(arr_new[j])) checker = false
+	    }
+	    if(checker) res.push(arr_old[i])
+		}
+		return res
 	};
 
 	function random(low, high) {

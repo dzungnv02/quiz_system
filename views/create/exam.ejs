@@ -201,459 +201,459 @@
 
 
 <script type="text/javascript">
-		(function() {
-			var exam_id = null,
-					question_id = [],
-					prev_target = null,
-					update_target = null,
-					question_target = null,
-					form_target = null;
-					form_target_type = null,
-					input_index = 2;
-			var exam_load_info = [];
+	(function() {
+		var exam_id = null,
+				question_id = [],
+				prev_target = null,
+				update_target = null,
+				question_target = null,
+				form_target = null;
+				form_target_type = null,
+				input_index = 2;
+		var exam_load_info = [];
 
-			var selector = {
-				div_content: $('#exam_content'),
-				exam_search_modal: $('#load-exam'),
-				question_search_modal: $('#load-question'),
-			};
+		var selector = {
+			div_content: $('#exam_content'),
+			exam_search_modal: $('#load-exam'),
+			question_search_modal: $('#load-question'),
+		};
 
-			var templates = {
-				remove_question_buton: '<button data-action="remove-question" class="btn btn-default btn-xs pull-right">Xóa bỏ</button>',
-				create_or_load_question: '<div class="col-sm-8 col-sm-offset-4"> <button data-action="create-exam" class="btn btn-primary btn-labeled"> <span class="btn-label icon fa fa-plus"></span>Tạo mới </button> <span style="margin: 0 10px"> hoặc </span> <button data-action="search-exam" class="btn btn-primary btn-outline" title="Chọn từ ngân hàng" data-toggle="modal" data-target="#load-exam">+ Chèn bài kiểm tra</button> </div>',
-				question_form: '<div class="col-sm-1 upper"><p>Câu hỏi</p><ul id="questions"></ul> <div style="margin:30px -11px 0 0"> <button data-action="add-question" class="btn btn-default btn-outline" style="padding:5px">+</button> <span style="font-size: 9px;margin: 0 5px"> hoặc </span> <a href="#" title="Chọn từ ngân hàng câu hỏi" data-action="search-question" data-toggle="modal" data-target="#load-question">Chọn</a></div></div><div class="col-sm-9 lower"></div><div class="col-sm-2"><p>Tags</p> <select multiple="multiple" id="exam_tags_input"> <optgroup label="Toán"> <option value="T1">Toán 1</option> <option value="T2">Toán 2</option> </optgroup> <optgroup label="Anh"> <option value="A1">Anh 1</option> <option value="A2">Anh 2</option> <option value="A3">Anh 3</option> <option value="A4">Anh 4</option> </optgroup> <optgroup label="Ngữ Văn"> <option value="NV6">Ngữ Văn 6</option> <option value="NV7">Ngữ Văn 7</option> <option value="NV8">Ngữ Văn 8</option> <option value="NV9">Ngữ Văn 9</option> </optgroup> </select> <div class="checkbox" style="margin:5px 0"> <label> <input type="checkbox" id="exam_shuffle_input" class="px" checked=""> <span class="lbl">Trộn câu hỏi</span> </label> </div> <div class="checkbox" style="margin:5px 0"> <label> <input type="checkbox" id="exam_score_input" class="px"> <span class="lbl">Cho xem điểm</span> </label> </div> <div class="checkbox" style="margin:5px 0"> <label> <input type="checkbox" id="exam_hint_input" class="px"> <span class="lbl">Hiện đáp án đúng</span> </label> </div> <div class="checkbox" style="margin:5px 0"> <label> <input type="checkbox" id="exam_repeat_input" class="px"> <span class="lbl">Làm nhiều lần</span> </label> </div> </div>',
-				notification: function(type, msg) {
-					return '<div id="notify-wrapper"> <span id="notify" class="server-'+type+'"> <span id="notify-msg" class="notify-msg"><span>'+msg+'</span></span> </span> </div>'
-				}
-			};
-
-			var load_exists_exam = function(id) {
-				$.post('/manager/exam-load',{id: id},function(res) {
-					if (res) {
-						var data = res.q;
-						var info = res.e;
-						exam_id = id;
-						exam_load_info[exam_id] = res.e;
-						question_id = exam_load_info[exam_id].questions;
-						selector.div_content.html(templates.question_form);
-						$('#exam_tags_input').select2({
-							width: "100%",
-							placeholder: "Chọn..."
-						}).select2('val', exam_load_info[exam_id].tags);
-						$('#exam_title_input').val(exam_load_info[exam_id].name);
-						$('#exam_time_input').val(exam_load_info[exam_id].time / 60);
-						$('#exam_shuffle_input').prop('checked', exam_load_info[exam_id].shuffle);
-
-						var q = $('#questions');
-						var a = $('.lower');
-						for(var i = 0; i < question_id.length; i++) {
-							question_target = i;
-							var item = $('<li></li>', {
-								'data-id': question_id[i],
-								class: $(data[i]).data('draft') ? 'draft' : '',
-								text: i + 1
-							}).bind('click', question_click );
-							if (i + 1 == data.length) {
-								q.append(item.addClass('active'));
-								a.append($(data[i]).removeClass('hidden'))
-							} else {
-								q.append(item);
-								a.append($(data[i]))
-							}
-						}
-						selector.exam_search_modal.trigger('click')
-					}
-				})
-			};
-
-			<% if(load_exam) { %>
-				load_exists_exam('<%= load_exam %>')
-			<% } %>
-
-			$('#exam_title_input').val('Bài kiểm tra '+ new Date().toJSON().slice(0,19).replace(/:|T/g,'-'));
-			$('[data-action="create-exam"]').on('click', function() {
-				var data = {
-					title: $('#exam_title_input').val(),
-					time: $('#exam_time_input').val() * 60,
-					shuffle: $('#exam_shuffle_input').is(':checked'),
-				}
-				$.post('/manager/exam-create', data, function(res) {
-					if(res.ok) {
-						exam_id = res.exam;
-						selector.div_content.html(templates.question_form);
-						$('#exam_tags_input').select2({
-							placeholder: "Chọn..."
-						});
-						insert_new_question($('#questions'), $('.lower'));
-					}
-				})
-			});
-
-			$('#questions li').on('click', question_click );
-
-			$('#select-exam, #select-question, #exam_tags_input').select2({
-				width: "100%",
-				placeholder: "Chọn..."
-			});
-			
-			$('#exam_title_input').on('change',function() {
-				var that = $(this);
-				var v = that.val().trim();
-				if (v != '' && v != undefined) {
-					if (v != that.data('old-val') ) {
-						that.attr('data-old-val', v);
-						update_exam({
-							name: v
-						})
-					}
-				}
-			});
-
-			$('#exam_time_input').on('change',function() {
-				var that = $(this);
-				var v = parseInt(that.val().trim()) * 60;
-				if (v != '' && v != undefined) {
-					if (v != that.data('old-val') ) {
-						that.attr('data-old-val', v);
-						update_exam({
-							time: v
-						})
-					}
-				}
-			});
-
-			selector.div_content.on('click', '#exam_shuffle_input', function() {
-				var that = $(this);
-				var v = that.is(':checked');
-				if ( v != undefined) {
-					update_exam({
-						shuffle: v
-					})
-				}
-			});
-
-			selector.div_content.on('change', '#exam_tags_input',function() {
-				var that = $(this);
-				var v = that.val();
-				if (v != [] && v != undefined) {
-					update_exam({
-						tags: v
-					})
-				}
-			});
-
-			$('[data-action="save-exam"]').on('click', function() {
-				var checker = false;
-				var data = {
-					title: $('#exam_title_input').val(),
-					time: $('#exam_time_input').val() * 60,
-					shuffle: $('#exam_shuffle_input').is(':checked'),
-					tags: $('#exam_tags_input').val()
-				};
-				if (data.title != undefined || data.title != '') {
-					if (data.time != undefined || data.time != '') {
-						checker = true;
-						if (selector.div_content.find('li.draft').length == 0 ) data.done = true;
-					}
-				};
-				if (checker) {
-					//update_exam(data)
-				} else {
-					push_notification('warning','Thông tin bị thiếu');
-				}
-				
-			});
-
-			var question_click = function(e) {
-				var that = $(e.currentTarget);
-				that.parent().children().removeClass('active');
-				that.addClass('active');
-				question_target = that.index();
-				var id = that.data('id');
-				if (id != null || id != undefined) {
-					var div = that.parents('#exam_content').find('.lower');
-					var form_container = div.children('#question-'+id);
-					set_form_target(form_container.find('form.active'));
-					div.children().addClass('hidden');
-					form_container.removeClass('hidden');
-				} else {
-					console.log('question undefined')
-				}
-				return false;
-			};
-
-			selector.div_content.on('click', '[data-action="add-question"]', function(e) {
-				insert_new_question($('#questions'), $('.lower'))
-			});
-
-			selector.div_content.on('click', '[data-toggle="tab"]', function(e) {
-				if (e.originalEvent !== undefined) {
-					if (!confirm('Thay đổi loại câu hỏi sẽ làm mất đáp án')) return false;
-					change_question_type($(this),false)
-				} else if (e.isTrigger) change_question_type($(this),true);
-			});
-
-			var change_question_type = function(that, onload) {
-				var question = question_id[question_target];
-				var old_form = that.parents('#question-'+question).find('.question-form'+question+' form.active');
-				set_form_target($(that.attr('href')));
-				update_question({
-					id: question,
-					form: onload ? undefined : form_target_type
-				});
-
-				$(form_target.children()[0]).find('.help-block span').html(templates.remove_question_buton);
-				if(!onload) {
-					var q_input_name = 'textarea';
-			    var q_input = form_target.find(q_input_name);
-			    var old_q_input = old_form.find(q_input_name);
-					form_target.find(':input').val('');
-					form_target.find(':checkbox, :radio').prop('checked', false);
-					form_target.find(':checkbox:first, :radio:first').prop('checked', true);
-					input_index = form_target.find('[data-input="answers-input"]').length;
-					q_input.val(old_q_input.val());
-					q_input.attr('data-old-val',old_q_input.data('old-val'));
-				}
+		var templates = {
+			remove_question_buton: '<button data-action="remove-question" class="btn btn-default btn-xs pull-right">Xóa bỏ</button>',
+			create_or_load_question: '<div class="col-sm-8 col-sm-offset-4"> <button data-action="create-exam" class="btn btn-primary btn-labeled"> <span class="btn-label icon fa fa-plus"></span>Tạo mới </button> <span style="margin: 0 10px"> hoặc </span> <button data-action="search-exam" class="btn btn-primary btn-outline" title="Chọn từ ngân hàng" data-toggle="modal" data-target="#load-exam">+ Chèn bài kiểm tra</button> </div>',
+			question_form: '<div class="col-sm-1 upper"><p>Câu hỏi</p><ul id="questions"></ul> <div style="margin:30px -11px 0 0"> <button data-action="add-question" class="btn btn-default btn-outline" style="padding:5px">+</button> <span style="font-size: 9px;margin: 0 5px"> hoặc </span> <a href="#" title="Chọn từ ngân hàng câu hỏi" data-action="search-question" data-toggle="modal" data-target="#load-question">Chọn</a></div></div><div class="col-sm-9 lower"></div><div class="col-sm-2"><p>Tags</p> <select multiple="multiple" id="exam_tags_input"> <optgroup label="Toán"> <option value="T1">Toán 1</option> <option value="T2">Toán 2</option> </optgroup> <optgroup label="Anh"> <option value="A1">Anh 1</option> <option value="A2">Anh 2</option> <option value="A3">Anh 3</option> <option value="A4">Anh 4</option> </optgroup> <optgroup label="Ngữ Văn"> <option value="NV6">Ngữ Văn 6</option> <option value="NV7">Ngữ Văn 7</option> <option value="NV8">Ngữ Văn 8</option> <option value="NV9">Ngữ Văn 9</option> </optgroup> </select> <div class="checkbox" style="margin:5px 0"> <label> <input type="checkbox" id="exam_shuffle_input" class="px" checked=""> <span class="lbl">Trộn câu hỏi</span> </label> </div> <div class="checkbox" style="margin:5px 0"> <label> <input type="checkbox" id="exam_score_input" class="px"> <span class="lbl">Cho xem điểm</span> </label> </div> <div class="checkbox" style="margin:5px 0"> <label> <input type="checkbox" id="exam_hint_input" class="px"> <span class="lbl">Hiện đáp án đúng</span> </label> </div> <div class="checkbox" style="margin:5px 0"> <label> <input type="checkbox" id="exam_repeat_input" class="px"> <span class="lbl">Làm nhiều lần</span> </label> </div> </div>',
+			notification: function(type, msg) {
+				return '<div id="notify-wrapper"> <span id="notify" class="server-'+type+'"> <span id="notify-msg" class="notify-msg"><span>'+msg+'</span></span> </span> </div>'
 			}
+		};
 
-			selector.div_content.on('click', '[data-action="remove-question"]', function(e) {
-				e.preventDefault();
-				var that = $(this);
-				remove_question({
-					id: question_id[question_target],
-					exam: exam_id,
-					question: question_target
-				}, function() {
-					$('#question-'+question_id[question_target]).remove();
-					var tmp = question_target + 1;
-					$('#questions > li:nth-child('+tmp+')').remove();
-					select_question_before(question_target);
-				})
-			});
+		var load_exists_exam = function(id) {
+			$.post('/manager/exam-load',{id: id},function(res) {
+				if (res) {
+					var data = res.q;
+					var info = res.e;
+					exam_id = id;
+					exam_load_info[exam_id] = res.e;
+					question_id = exam_load_info[exam_id].questions;
+					selector.div_content.html(templates.question_form);
+					$('#exam_tags_input').select2({
+						width: "100%",
+						placeholder: "Chọn..."
+					}).select2('val', exam_load_info[exam_id].tags);
+					$('#exam_title_input').val(exam_load_info[exam_id].name);
+					$('#exam_time_input').val(exam_load_info[exam_id].time / 60);
+					$('#exam_shuffle_input').prop('checked', exam_load_info[exam_id].shuffle);
 
-			selector.div_content.on('click', '[data-action="remove-input"]', function(e) {
-				if( input_index >= 2 ) {
-        	var that = $(this);
-        	var that_parent = that.parent();
-        	var that_input = that_parent.find('[data-input="answers-input"]');
-          var answers = form_target.find('[data-input="answers-input"]');
-          if (that.data('add-index') == answers.index(that_input)) {
-          	remove_answer({
-							question: question_id[question_target],
-							answer: answers.index(that_input)
-						});
-						that_parent.remove();
-	          input_index--;
-          }
-        }
-        return false
-			});
-
-			selector.div_content.on('click', '[data-action="add-input"]', function() {
-        insert_new_answer();
-        var input_type = 'radio';
-        if (form_target_type == 'multi-answer') input_type = 'checkbox';
-        $('<div class="input-group has-feedback"> <span class="input-group-addon '+input_type+'-success"> <input type="'+input_type+'" data-input="answer" name="answer'+question_id[question_target]+'" class="styled"> </span> <input type="text" data-input="answers-input" class="form-control" placeholder="Lựa chọn.."> <i data-action="put-attachment" class="icon-link form-control-feedback"></i> <a href="#" data-action="remove-input" data-add-index="'+input_index+'">Loại bỏ</a> </div>').insertBefore($(this));
-        $('.styled').uniform({ radioClass: 'choice', selectAutoWidth: false });
-        input_index++;
-        return false
-      });
-
-			selector.div_content.on('change', '[data-input="question-input"]', function(e) {
-				var that = $(this);
-				if (that.val() != '' ) {
-					if (that.val() != that.data('old-val') ) {
-						that.attr('data-old-val', that.val());
-						update_question({
-							id: question_id[question_target],
-							exam: exam_id,
-							question: that.val().trim()
-						})
-					}
-				} else {
-					$('#questions li.active').addClass('draft')
-				}
-			});
-
-			selector.div_content.on('change', '[data-input="answers-input"]', function(e) {
-				var that = $(this);
-				if (that.val() != '' && that.val() != that.data('old-val') ) {
-					var answers = $('[data-input="answers-input"]');
-					if (form_target != null) answers = form_target.find('[data-input="answers-input"]');
-					that.attr('data-old-val', that.val());
-					update_answer({
-						id: question_id[question_target],
-						answer: answers.index(that),
-						text: that.val().trim()
-					})
-				}
-			});
-
-			selector.div_content.on('click', '[data-input="answer"]', function(e) {
-				var that = $(this);
-				var value = that.is(':checked');
-				var answer = $('[data-input="answer"]');
-				if (form_target != null) answer = form_target.find('[data-input="answer"]');
-				if (that.hasClass('switcher')) value = that.children('input').is(':checked');
-				update_answer({
-					id: question_id[question_target],
-					answer: answer.index(that),
-					correct: value
-				})
-			});
-
-			selector.div_content.on('click', '[data-action="put-attachment"]', function(e) {
-				$('#load-library').modal('show');
-			});
-
-			var insert_new_question = function(el_list, el_form, callback) {
-				$.post('/manager/question-create',{exam: exam_id},function(data) {
-					var el = $(data);
-					question_target = el_list.children().length;
-					question_id[question_target] = el.attr('id').substring(9);
-					var item = $('<li></li>', {
-						class: 'draft active',
-						'data-id': question_id[question_target],
-						text: question_target + 1
-					}).bind('click', question_click );
-					el_list.children().removeClass('active');
-					el_list.append(item);
-					el_form.children().addClass('hidden');
-					el_form.append(el.removeClass('hidden'));
-					
-					el_form.find('form.active > div:first-child > div > div').html(templates.remove_question_buton);
-					if (callback) callback()
-				})
-			};
-
-			var select_question_before = function(curent_question) {
-				question_id[curent_question] = null;
-				question_id = clean_array(question_id);
-				if (question_id.length > 0) {
-					$('#questions > li:nth-child('+curent_question+')').trigger('click')
-				} else selector.div_content.html(templates.create_or_load_question)
-			};
-
-			function clean_array(array) {
-			  var new_array = new Array();
-			  for (var i = 0; i < array.length; i++) {
-			    if (array[i]) {
-			      new_array.push(array[i]);
-			    }
-			  }
-			  return new_array;
-			}
-
-			var set_form_target = function(form) {
-				form_target = form;
-				var q = form_target.attr('id').split('-');
-				form_target_type = q[0]+'-'+q[1];
-			};
-
-			var push_notification = function(type,msg) {
-				var noti = $(templates.notification(type,msg));
-				noti.css('display','inline-block');
-				$('body').append(noti);
-				setTimeout(function(){
-		      noti.remove()
-		    } ,1300);
-			};
-
-			var insert_new_answer = function(callback) {
-				$.post('/manager/answer-create', {question:question_id[question_target]},function(res){
-					console.log('answer create: '+res.ok)
-					if (callback) callback()
-				})
-			};
-
-			var update_exam = function(data) {
-				data.id = exam_id;
-				$.post('/manager/exam-update', data, function(res) {
-					push_notification('success','Updating...');
-					console.log('exam update: '+res.ok)
-				})
-			};
-
-			var update_question = function(data) {
-				$.post('/manager/question-update', data, function(res) {
-					push_notification('success','Updating...');
-					console.log('question update: '+res.ok)
-				})
-			};
-
-			var remove_question = function(data, callback) {
-				$.post('/manager/question-remove', data, function(res) {
-					push_notification('success','Updating...');
-					console.log('question remove: '+res.ok);
-					if (callback) callback()
-				})
-			};
-
-			var update_answer = function(data) {
-				$.post('/manager/answer-update', data, function(res) {
-					push_notification('success','Updating...');
-					if(res.error != undefined) console.warning(res.error)
-					if(res.ok != undefined) console.log('answer update: '+res.ok)
-					else console.log('answer update uncorupted')
-				})
-			};
-
-			var remove_answer = function(data) {
-				push_notification('success','Updating...');
-				$.post('/manager/answer-delete', data, function(res) {
-					console.log('answer delete: '+res.ok)
-				})
-			};
-
-			selector.div_content.on('click', '[data-action="search-exam"]',function() {
-				$.post('/manager/exam-search',function(res) {
-					var html = '';
-					for(var i = 0; i < res.length; i++) {
-						var done = (res[i].done) ? '' : '<br/><small>Chưa hoàn thành</small>';
-						html += '<div> <button data-action="load-exam" data-exam="'+res[i]._id+'" class="btn btn-default pull-right">Chọn</button> <h5>'+res[i].name+done+'</h5> </div>'
-					}
-					selector.exam_search_modal.find('.load-exam-container').html(html);
-				})
-			});
-
-			selector.exam_search_modal.on('click', '[data-action="load-exam"]',function() {
-				load_exists_exam($(this).data('exam'));
-			});
-
-			selector.div_content.on('click', '[data-action="search-question"]',function() {
-				$.post('/manager/question-search',function(res) {
-					var html = '';
-					for(var i = 0; i < res.length; i++) {
-						var done = (res[i].done) ? '' : '<br/><small>Chưa hoàn thành</small>';
-						html += '<div style="min-height: 30px"> <button data-action="load-question" data-question="'+res[i]._id+'" class="btn btn-default pull-right">Chọn</button> <h5>'+res[i].question+done+'</h5> </div>'
-					}
-					selector.question_search_modal.find('.load-question-container').html(html);
-				})
-			});
-
-			selector.question_search_modal.on('click', '[data-action="load-question"]',function() {
-				var that = $(this);
-				$.post('/manager/question-load',{
-					id: that.data('question'),
-					exam: exam_id
-				},function(data) {
 					var q = $('#questions');
 					var a = $('.lower');
-					var id = $(data).attr('id').substring(9);
-					question_id.push(id);
-					question_target = question_id.length - 1;
-					var item = $('<li></li>', {
-						'data-id': id,
-						class: $(data).data('draft') ? 'draft' : '',
-						text: question_target + 1
-					}).bind('click', question_click );
-					q.children().removeClass('active');
-					q.append(item.addClass('active'));
-					a.children().addClass('hidden');
-					a.append($(data).removeClass('hidden'));
-					selector.question_search_modal.trigger('click')
+					for(var i = 0; i < question_id.length; i++) {
+						question_target = i;
+						var item = $('<li></li>', {
+							'data-id': question_id[i],
+							class: $(data[i]).data('draft') ? 'draft' : '',
+							text: i + 1
+						}).bind('click', question_click );
+						if (i + 1 == data.length) {
+							q.append(item.addClass('active'));
+							a.append($(data[i]).removeClass('hidden'))
+						} else {
+							q.append(item);
+							a.append($(data[i]))
+						}
+					}
+					selector.exam_search_modal.trigger('click')
+				}
+			})
+		};
+
+		<% if(load_exam) { %>
+			load_exists_exam('<%= load_exam %>')
+		<% } %>
+
+		$('#exam_title_input').val('Bài kiểm tra '+ new Date().toJSON().slice(0,19).replace(/:|T/g,'-'));
+		$('[data-action="create-exam"]').on('click', function() {
+			var data = {
+				title: $('#exam_title_input').val(),
+				time: $('#exam_time_input').val() * 60,
+				shuffle: $('#exam_shuffle_input').is(':checked'),
+			}
+			$.post('/manager/exam-create', data, function(res) {
+				if(res.ok) {
+					exam_id = res.exam;
+					selector.div_content.html(templates.question_form);
+					$('#exam_tags_input').select2({
+						placeholder: "Chọn..."
+					});
+					insert_new_question($('#questions'), $('.lower'));
+				}
+			})
+		});
+
+		$('#questions li').on('click', question_click );
+
+		$('#select-exam, #select-question, #exam_tags_input').select2({
+			width: "100%",
+			placeholder: "Chọn..."
+		});
+		
+		$('#exam_title_input').on('change',function() {
+			var that = $(this);
+			var v = that.val().trim();
+			if (v != '' && v != undefined) {
+				if (v != that.data('old-val') ) {
+					that.attr('data-old-val', v);
+					update_exam({
+						name: v
+					})
+				}
+			}
+		});
+
+		$('#exam_time_input').on('change',function() {
+			var that = $(this);
+			var v = parseInt(that.val().trim()) * 60;
+			if (v != '' && v != undefined) {
+				if (v != that.data('old-val') ) {
+					that.attr('data-old-val', v);
+					update_exam({
+						time: v
+					})
+				}
+			}
+		});
+
+		selector.div_content.on('click', '#exam_shuffle_input', function() {
+			var that = $(this);
+			var v = that.is(':checked');
+			if ( v != undefined) {
+				update_exam({
+					shuffle: v
 				})
+			}
+		});
+
+		selector.div_content.on('change', '#exam_tags_input',function() {
+			var that = $(this);
+			var v = that.val();
+			if (v != [] && v != undefined) {
+				update_exam({
+					tags: v
+				})
+			}
+		});
+
+		$('[data-action="save-exam"]').on('click', function() {
+			var checker = false;
+			var data = {
+				title: $('#exam_title_input').val(),
+				time: $('#exam_time_input').val() * 60,
+				shuffle: $('#exam_shuffle_input').is(':checked'),
+				tags: $('#exam_tags_input').val()
+			};
+			if (data.title != undefined || data.title != '') {
+				if (data.time != undefined || data.time != '') {
+					checker = true;
+					if (selector.div_content.find('li.draft').length == 0 ) data.done = true;
+				}
+			};
+			if (checker) {
+				//update_exam(data)
+			} else {
+				push_notification('warning','Thông tin bị thiếu');
+			}
+			
+		});
+
+		var question_click = function(e) {
+			var that = $(e.currentTarget);
+			that.parent().children().removeClass('active');
+			that.addClass('active');
+			question_target = that.index();
+			var id = that.data('id');
+			if (id != null || id != undefined) {
+				var div = that.parents('#exam_content').find('.lower');
+				var form_container = div.children('#question-'+id);
+				set_form_target(form_container.find('form.active'));
+				div.children().addClass('hidden');
+				form_container.removeClass('hidden');
+			} else {
+				console.log('question undefined')
+			}
+			return false;
+		};
+
+		selector.div_content.on('click', '[data-action="add-question"]', function(e) {
+			insert_new_question($('#questions'), $('.lower'))
+		});
+
+		selector.div_content.on('click', '[data-toggle="tab"]', function(e) {
+			if (e.originalEvent !== undefined) {
+				if (!confirm('Thay đổi loại câu hỏi sẽ làm mất đáp án')) return false;
+				change_question_type($(this),false)
+			} else if (e.isTrigger) change_question_type($(this),true);
+		});
+
+		var change_question_type = function(that, onload) {
+			var question = question_id[question_target];
+			var old_form = that.parents('#question-'+question).find('.question-form'+question+' form.active');
+			set_form_target($(that.attr('href')));
+			update_question({
+				id: question,
+				form: onload ? undefined : form_target_type
 			});
 
-		})()
+			$(form_target.children()[0]).find('.help-block span').html(templates.remove_question_buton);
+			if(!onload) {
+				var q_input_name = 'textarea';
+		    var q_input = form_target.find(q_input_name);
+		    var old_q_input = old_form.find(q_input_name);
+				form_target.find(':input').val('');
+				form_target.find(':checkbox, :radio').prop('checked', false);
+				form_target.find(':checkbox:first, :radio:first').prop('checked', true);
+				input_index = form_target.find('[data-input="answers-input"]').length;
+				q_input.val(old_q_input.val());
+				q_input.attr('data-old-val',old_q_input.data('old-val'));
+			}
+		}
+
+		selector.div_content.on('click', '[data-action="remove-question"]', function(e) {
+			e.preventDefault();
+			var that = $(this);
+			remove_question({
+				id: question_id[question_target],
+				exam: exam_id,
+				question: question_target
+			}, function() {
+				$('#question-'+question_id[question_target]).remove();
+				var tmp = question_target + 1;
+				$('#questions > li:nth-child('+tmp+')').remove();
+				select_question_before(question_target);
+			})
+		});
+
+		selector.div_content.on('click', '[data-action="remove-input"]', function(e) {
+			if( input_index >= 2 ) {
+      	var that = $(this);
+      	var that_parent = that.parent();
+      	var that_input = that_parent.find('[data-input="answers-input"]');
+        var answers = form_target.find('[data-input="answers-input"]');
+        if (that.data('add-index') == answers.index(that_input)) {
+        	remove_answer({
+						question: question_id[question_target],
+						answer: answers.index(that_input)
+					});
+					that_parent.remove();
+          input_index--;
+        }
+      }
+      return false
+		});
+
+		selector.div_content.on('click', '[data-action="add-input"]', function() {
+      insert_new_answer();
+      var input_type = 'radio';
+      if (form_target_type == 'multi-answer') input_type = 'checkbox';
+      $('<div class="input-group has-feedback"> <span class="input-group-addon '+input_type+'-success"> <input type="'+input_type+'" data-input="answer" name="answer'+question_id[question_target]+'" class="styled"> </span> <input type="text" data-input="answers-input" class="form-control" placeholder="Lựa chọn.."> <i data-action="put-attachment" class="icon-link form-control-feedback"></i> <a href="#" data-action="remove-input" data-add-index="'+input_index+'">Loại bỏ</a> </div>').insertBefore($(this));
+      $('.styled').uniform({ radioClass: 'choice', selectAutoWidth: false });
+      input_index++;
+      return false
+    });
+
+		selector.div_content.on('change', '[data-input="question-input"]', function(e) {
+			var that = $(this);
+			if (that.val() != '' ) {
+				if (that.val() != that.data('old-val') ) {
+					that.attr('data-old-val', that.val());
+					update_question({
+						id: question_id[question_target],
+						exam: exam_id,
+						question: that.val().trim()
+					})
+				}
+			} else {
+				$('#questions li.active').addClass('draft')
+			}
+		});
+
+		selector.div_content.on('change', '[data-input="answers-input"]', function(e) {
+			var that = $(this);
+			if (that.val() != '' && that.val() != that.data('old-val') ) {
+				var answers = $('[data-input="answers-input"]');
+				if (form_target != null) answers = form_target.find('[data-input="answers-input"]');
+				that.attr('data-old-val', that.val());
+				update_answer({
+					id: question_id[question_target],
+					answer: answers.index(that),
+					text: that.val().trim()
+				})
+			}
+		});
+
+		selector.div_content.on('click', '[data-input="answer"]', function(e) {
+			var that = $(this);
+			var value = that.is(':checked');
+			var answer = $('[data-input="answer"]');
+			if (form_target != null) answer = form_target.find('[data-input="answer"]');
+			if (that.hasClass('switcher')) value = that.children('input').is(':checked');
+			update_answer({
+				id: question_id[question_target],
+				answer: answer.index(that),
+				correct: value
+			})
+		});
+
+		selector.div_content.on('click', '[data-action="put-attachment"]', function(e) {
+			$('#load-library').modal('show');
+		});
+
+		var insert_new_question = function(el_list, el_form, callback) {
+			$.post('/manager/question-create',{exam: exam_id},function(data) {
+				var el = $(data);
+				question_target = el_list.children().length;
+				question_id[question_target] = el.attr('id').substring(9);
+				var item = $('<li></li>', {
+					class: 'draft active',
+					'data-id': question_id[question_target],
+					text: question_target + 1
+				}).bind('click', question_click );
+				el_list.children().removeClass('active');
+				el_list.append(item);
+				el_form.children().addClass('hidden');
+				el_form.append(el.removeClass('hidden'));
+				
+				el_form.find('form.active > div:first-child > div > div').html(templates.remove_question_buton);
+				if (callback) callback()
+			})
+		};
+
+		var select_question_before = function(curent_question) {
+			question_id[curent_question] = null;
+			question_id = clean_array(question_id);
+			if (question_id.length > 0) {
+				$('#questions > li:nth-child('+curent_question+')').trigger('click')
+			} else selector.div_content.html(templates.create_or_load_question)
+		};
+
+		function clean_array(array) {
+		  var new_array = new Array();
+		  for (var i = 0; i < array.length; i++) {
+		    if (array[i]) {
+		      new_array.push(array[i]);
+		    }
+		  }
+		  return new_array;
+		}
+
+		var set_form_target = function(form) {
+			form_target = form;
+			var q = form_target.attr('id').split('-');
+			form_target_type = q[0]+'-'+q[1];
+		};
+
+		var push_notification = function(type,msg) {
+			var noti = $(templates.notification(type,msg));
+			noti.css('display','inline-block');
+			$('body').append(noti);
+			setTimeout(function(){
+	      noti.remove()
+	    } ,1300);
+		};
+
+		var insert_new_answer = function(callback) {
+			$.post('/manager/answer-create', {question:question_id[question_target]},function(res){
+				console.log('answer create: '+res.ok)
+				if (callback) callback()
+			})
+		};
+
+		var update_exam = function(data) {
+			data.id = exam_id;
+			$.post('/manager/exam-update', data, function(res) {
+				push_notification('success','Updating...');
+				console.log('exam update: '+res.ok)
+			})
+		};
+
+		var update_question = function(data) {
+			$.post('/manager/question-update', data, function(res) {
+				push_notification('success','Updating...');
+				console.log('question update: '+res.ok)
+			})
+		};
+
+		var remove_question = function(data, callback) {
+			$.post('/manager/question-remove', data, function(res) {
+				push_notification('success','Updating...');
+				console.log('question remove: '+res.ok);
+				if (callback) callback()
+			})
+		};
+
+		var update_answer = function(data) {
+			$.post('/manager/answer-update', data, function(res) {
+				push_notification('success','Updating...');
+				if(res.error != undefined) console.warning(res.error)
+				if(res.ok != undefined) console.log('answer update: '+res.ok)
+				else console.log('answer update uncorupted')
+			})
+		};
+
+		var remove_answer = function(data) {
+			push_notification('success','Updating...');
+			$.post('/manager/answer-delete', data, function(res) {
+				console.log('answer delete: '+res.ok)
+			})
+		};
+
+		selector.div_content.on('click', '[data-action="search-exam"]',function() {
+			$.post('/manager/exam-search',function(res) {
+				var html = '';
+				for(var i = 0; i < res.length; i++) {
+					var done = (res[i].done) ? '' : '<br/><small>Chưa hoàn thành</small>';
+					html += '<div> <button data-action="load-exam" data-exam="'+res[i]._id+'" class="btn btn-default pull-right">Chọn</button> <h5>'+res[i].name+done+'</h5> </div>'
+				}
+				selector.exam_search_modal.find('.load-exam-container').html(html);
+			})
+		});
+
+		selector.exam_search_modal.on('click', '[data-action="load-exam"]',function() {
+			load_exists_exam($(this).data('exam'));
+		});
+
+		selector.div_content.on('click', '[data-action="search-question"]',function() {
+			$.post('/manager/question-search',function(res) {
+				var html = '';
+				for(var i = 0; i < res.length; i++) {
+					var done = (res[i].done) ? '' : '<br/><small>Chưa hoàn thành</small>';
+					html += '<div style="min-height: 30px"> <button data-action="load-question" data-question="'+res[i]._id+'" class="btn btn-default pull-right">Chọn</button> <h5>'+res[i].question+done+'</h5> </div>'
+				}
+				selector.question_search_modal.find('.load-question-container').html(html);
+			})
+		});
+
+		selector.question_search_modal.on('click', '[data-action="load-question"]',function() {
+			var that = $(this);
+			$.post('/manager/question-load',{
+				id: that.data('question'),
+				exam: exam_id
+			},function(data) {
+				var q = $('#questions');
+				var a = $('.lower');
+				var id = $(data).attr('id').substring(9);
+				question_id.push(id);
+				question_target = question_id.length - 1;
+				var item = $('<li></li>', {
+					'data-id': id,
+					class: $(data).data('draft') ? 'draft' : '',
+					text: question_target + 1
+				}).bind('click', question_click );
+				q.children().removeClass('active');
+				q.append(item.addClass('active'));
+				a.children().addClass('hidden');
+				a.append($(data).removeClass('hidden'));
+				selector.question_search_modal.trigger('click')
+			})
+		});
+
+	})()
 </script>

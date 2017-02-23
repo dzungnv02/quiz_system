@@ -22,7 +22,7 @@
 			<a href="#" title="" class="bg-primary"><i class="icon-people"></i></a>
 			<strong><%= groups[i]['users'].length %> 
 				<% if(groups[i]['join_requests'].length > 0) { %>
-					<small style="font-size:11px" class="text-info" data-action="list-join-requests" data-group="<%= groups[i]['_id'] %>" data-toggle="modal" data-target="#join-requests"> + <%= groups[i]['join_requests'].length %>  yêu cầu gia nhập</small>
+					<small style="font-size:11px" class="text-info" data-action="list-join-requests" data-group="<%= groups[i]['_id'] %>"> + <%= groups[i]['join_requests'].length %>  yêu cầu gia nhập</small>
 				<% } %>
 			</strong>
 			<div class="pull-right">
@@ -88,7 +88,7 @@
 			    swal.showInputError("Tên nhóm không được bỏ trống!");
 			    return false
 			  }
-			  $.post('/manager/group-create', {title: inputValue}, function(res) {
+			  $.post('/manager/group-create', {title: inputValue.trim()}, function(res) {
 			  	if(res.ok) {
 			  		swal("Thành công!", "Nhóm " + inputValue+" đã được tạo", "success");
 			  	} else {
@@ -99,9 +99,29 @@
 			})
 		};
 		if (action === 'users-group') {
+			var table = $('.join-requests-container');
+			table.dataTable({
+		    columnDefs: [{ 
+		      orderable: false,
+		      targets: [0,1]
+		    }],
+		    language: {
+					processing: 'Đang tải...',
+					info: '',
+					infoEmpty: '',
+					zeroRecords: 'Không tìm thấy',
+					lengthMenu: '_MENU_',
+					paginate: { 'first': '', 'last': '', 'next': '>', 'previous': '<' }
+				}
+		  })
 			$.post('/manager/group-users', {id: $(this).data('group')}, function(res) {
 		  	if(res.ok) {
-		  		swal("Thành công!", "Nhóm " + inputValue+" đã được tạo", "success");
+		  		var html = '';
+		  		for (var i = 0; i < res.users.length; i++) {
+		  			html += '<tr><td style="width:90%">'+res.users[i].username+'</td><td>o</td></tr>'
+		  		}
+		  		table.find('tbody').html(html);
+		  		$('#join-requests').modal('show');
 		  	} else {
 		    	return false
 		  	}
@@ -114,14 +134,31 @@
 		      orderable: false,
 		      targets: [0,1]
 		    }],
+		    language: {
+					processing: 'Đang tải...',
+					info: '',
+					infoEmpty: '',
+					zeroRecords: 'Không tìm thấy',
+					lengthMenu: '_MENU_',
+					paginate: { 'first': '', 'last': '', 'next': '>', 'previous': '<' }
+				}
 		  })
-			$.post('/manager/group-requests', {id: $(this).data('group')}, function(res) {
+		  var group = $(this).data('group');
+			$.post('/manager/group-requests', {id: group}, function(res) {
 		  	if(res.ok) {
 		  		var html = '';
 		  		for (var i = 0; i < res.users.length; i++) {
-		  			html += '<tr><td>'+res.users[i].username+'</td><td>a</td></tr>'
+		  			html += '<tr><td style="width:90%">'+res.users[i].username+'</td><td><button type="button" data-user="'+res.users[i]._id+'" data-action="accept-join-request" class="btn btn-info">Chấp nhận</button></td></tr>'
 		  		}
 		  		table.find('tbody').html(html);
+		  		$('#join-requests').modal('show');
+		  		$('[data-action="accept-join-request"]').on('click',function(){
+		  			var that = $(this);
+		  			$.post('/manager/group-requests', {accept: 1, id: group, user: that.data('user')}, function(){
+		  				if(res.ok) that.parent().parent().fadeOut(300, function() { $(this).remove() })
+		  				else console.log(res.error)
+		  			})
+		  		})
 		  	} else {
 		    	return false
 		  	}

@@ -5,7 +5,12 @@
 				<li class="nav-header">Nhóm <i class="icon-accessibility"></i></li>
 				<% if(groups.length >0) { %>
 					<% for(var i = 0; i < groups.length; i++) { %>
-						<li><a href="#"><%= groups[i]['name'] %><span class="label label-danger"><%= groups[i]['users'].length %></span></a></li>
+						<li>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><%= groups[i]['name'] %><span class="label label-danger"><%= groups[i]['exams'].length %></span></a>
+							<ul class="dropdown-menu icons-right dropdown-menu-right">
+								<li><a href="#"><i class="icon-exit"></i> Rời nhóm</a></li>
+							</ul>
+						</li>
 					<% } %>
 				<% } else { %>
 						<li><p>Chưa tham gia nhóm nào.</p></li>
