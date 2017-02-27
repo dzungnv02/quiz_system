@@ -631,9 +631,8 @@ MongoClient.connect(database_server, function(err, db) {
 						if (user._id == u.user) {
 							let cheatsheet = u.logs[u.logs.length - 1].cheatsheet;
 							let score_avg = 10/cheatsheet.length;
-							for (let i = 0; i < cheatsheet.length; i++) {
+							for (let i = 0; i < cheatsheet.length; i++) 
 								if (cheatsheet[i] == user_anwsers[i]) score += score_avg;
-							}
 							res.send({ ok:true, score: score.toFixed(2)})
 						}
 					}
@@ -735,6 +734,32 @@ MongoClient.connect(database_server, function(err, db) {
 		} else res.send({error: errors.not_found})
 	});
 
+	app.post('/group-list-exam', isAuthenticated, function(req, res) {
+		let groups = req.body.groups,
+				exam_array = exams = [];
+		async.series([
+			function(callback) {
+				for (let i = 0; i < groups.length; i++) {
+					exams.push({exams:[]});
+					find_group_in_exam(groups[i], function(err, exam_array) {
+						for (let j = 0; j < exam_array.length; j++) {
+							exams[i].exams.push({
+								name: exam_array[j].name,
+								time: exam_array[j].time,
+								question_number: exam_array[j].questions.length,
+								link: exam_array[j].link,
+							})
+						}
+						if( i == groups.length - 1) callback()
+					})
+				}
+			},
+			function(callback) {
+				res.send({ok: true, exams: exams})
+			}
+		])
+				
+	})
 // END USER REQUEST
 
 // FUNCTIONS
@@ -749,26 +774,40 @@ MongoClient.connect(database_server, function(err, db) {
 
 	var find_user_by_id = function(id, callback) {
 		if (Array.isArray(id)) {
-			User.find({_id: {$in: id}}).toArray(function(err, users) {
-		 		callback(err, users)
-		 	})
+			User.find({_id: {$in: id}}).toArray(callback)
 		} else {
-			User.findOne({_id: objectId(id)},function(err, user) {
-		 		callback(err, user)
-		 	})
+			User.findOne({_id: objectId(id)}, callback)
 		}
 	};
 
 	var find_group_by_id = function(id, callback) {
 		if (Array.isArray(id)) {
-			Group.find({_id: {$in: id}}).toArray(function(err, groups) {
-		 		callback(err, groups)
-		 	})
+			Group.find({_id: {$in: id}}).toArray(callback)
 		} else {
-			Group.findOne({_id: objectId(id)}, function(err, group) {
-		 		callback(err, group)
-		 	})
+			Group.findOne({_id: objectId(id)}, callback)
 		}
+	};
+
+	var find_group_in_exam = function(id, callback) {
+		Exam.find({groups: objectId(id)}).toArray(callback)
+	};
+
+	var find_exam_by_id = function(id, callback) {
+		if (Array.isArray(id)) {
+			Exam.find({_id: {$in: id}}).toArray(callback)
+		} else {
+			Exam.findOne({_id: objectId(id)}, callback)
+		}
+	};
+
+	var frontend_render = function(user, callback) {
+		Group.find({users: objectId(user._id)}).toArray(function(err, groups) {
+			if (groups) {
+				let exams = groups.exam;
+				if(err) callback({ok: false, error: err})
+				else callback(data);
+			}
+		})
 	};
 
 	var exam_online_generate = function(id, data, _callback) {
@@ -784,14 +823,14 @@ MongoClient.connect(database_server, function(err, db) {
 	};
 
 	var exam_online_add_user = function(id, data, _callback) {
-		Online.update({_id: objectId(id)}, {$push: {users: data}}, function(err, obj) {
+		Online.update({_id: id}, {$push: {users: data}}, function(err, obj) {
 			if(err) _callback(err);
 			_callback(true)
 		})
 	};
 
 	var exam_online_update_user = function(id, data, _callback) {
-		Online.update({_id: objectId(id), 'users.user': data.user},{$push: {'users.$.logs': data.data}}, function(err, obj) {
+		Online.update({_id: id, 'users.user': data.user},{$push: {'users.$.logs': data.data}}, function(err, obj) {
 			if(err) _callback(err);
 			_callback(true)
 		})
@@ -801,35 +840,32 @@ MongoClient.connect(database_server, function(err, db) {
 		let target;
 		if (Array.isArray(group)) target = {_id: {$in: group}}
 		else target = {_id: objectId(group)}
-		Group.update(target, {$push: {exams: objectId(exam)}}, {multi: true}, callback)
+		Group.update(target, {$push: {exams: exam}}, {multi: true}, callback)
 	};
 
 	var	group_remove_exam = function(exam, group, callback) {
 		let target;
 		if (Array.isArray(group)) target = {_id: {$in: group}}
 		else target = {_id: objectId(group)};
-		Group.update(target, {$pull: {exams: objectId(exam)}}, {multi: true}, callback)
+		Group.update(target, {$pull: {exams: exam}}, {multi: true}, callback)
 	};
 
 	var exam_add_group = function(exam, group, callback) {
 		let query;
-		if (group === '' || group === []) {
-			query = {$set: {groups: []}};
-			group = [];
-		} else if (Array.isArray(group)) {
-			for (var i = 0; i < group.length; i++) group[i] = objectId(group[i]);
-			query = {$set: {groups: group}}
+		if (group === '' || group === []) group = []
+		else if (Array.isArray(group)) {
+			for (var i = 0; i < group.length; i++) group[i] = objectId(group[i])
 		}
 
 		let group_remove_exam_list = get_element_different(exam.groups, group);
-		if(group_remove_exam_list) group_remove_exam(exam._id, group_remove_exam_list);
+		if(group_remove_exam_list) group_remove_exam(exam.link, group_remove_exam_list);
 
-		Exam.update({_id: objectId(exam._id)} , query, function(err) {
+		Exam.update({_id: objectId(exam._id)} , {$set: {groups: group}}, function(err) {
 			if(exam.link) {
-				if(exam.start_share) group_add_exam(exam._id, exam.groups, callback)
+				if(exam.start_share) group_add_exam(exam.link, exam.groups, callback)
 				else {
 					let group_push_exam_list = get_element_different(group, exam.groups);
-					group_add_exam(exam._id, group_push_exam_list, callback)
+					group_add_exam(exam.link, group_push_exam_list, callback)
 				}
 			}
 		})
@@ -864,7 +900,7 @@ MongoClient.connect(database_server, function(err, db) {
 				let query = {$set: {link: ''}} , group = exam.groups;
 				if (group) {
 					query = {$set: {link: ''}, $pull: {groups: group}};
-					Group.update({_id: {$in: group}}, {$pull: {exams: objectId(exam._id)}}, {multi: true})
+					Group.update({_id: {$in: group}}, {$pull: {exams: objectId(exam.link)}}, {multi: true})
 				}
 				Exam.update({_id: objectId(exam._id)}, query);
 				callback({ ok: true})

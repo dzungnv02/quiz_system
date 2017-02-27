@@ -77,6 +77,8 @@ body.stop-scrolling {
       max-height: 100px;
       webkit-transition: padding 0.2s, max-height 0.2s;
       transition: padding 0.25s, max-height 0.25s; }
+    .sweet-alert .sa-error-container.show.success .icon {
+      background-color: #8BC34A }
     .sweet-alert .sa-error-container .icon {
       display: inline-block;
       width: 24px;

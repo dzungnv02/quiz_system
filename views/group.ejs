@@ -90,7 +90,7 @@
 			  }
 			  $.post('/manager/group-create', {title: inputValue.trim()}, function(res) {
 			  	if(res.ok) {
-			  		swal("Thành công!", "Nhóm " + inputValue+" đã được tạo", "success");
+			  		swal.showInputSuccess('Nhóm '+inputValue+' đã được tạo');
 			  	} else {
 			  		swal.showInputError(res.error);
 			    	return false

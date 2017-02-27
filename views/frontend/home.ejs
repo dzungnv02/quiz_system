@@ -4,12 +4,14 @@
 	    <ul class="nav nav-list">
 				<li class="nav-header">Nhóm <i class="icon-accessibility"></i></li>
 				<% if(groups.length >0) { %>
+					<script>var groups = []</script>
 					<% for(var i = 0; i < groups.length; i++) { %>
 						<li>
               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><%= groups[i]['name'] %><span class="label label-danger"><%= groups[i]['exams'].length %></span></a>
 							<ul class="dropdown-menu icons-right dropdown-menu-right">
 								<li><a href="#"><i class="icon-exit"></i> Rời nhóm</a></li>
 							</ul>
+							<script>groups.push('<%= groups[i]['_id'] %>')</script>
 						</li>
 					<% } %>
 				<% } else { %>
@@ -105,22 +107,26 @@
 					<div class="block">
 						<h6><i class="icon-users"></i> Nhóm</h6>
 	        	<ul class="message-list">
-	        		<li class="message-list-header">Ôn thi ĐH</li>
-	        		<li>
-	              <div class="clearfix">
-	                <div class="chat-member">
-										<h6>Thi thử lần 1 <span class="status status-success"></span> <small>&nbsp; /&nbsp; Toán 12, Toán 11</small></h6>
-									</div>
-									<div class="chat-actions">
-										<a href="#" class="btn btn-link btn-icon btn-xs"><i class="icon-marker"></i></a>
-										<a class="btn btn-link btn-icon btn-xs" data-toggle="collapse" href="#eugene_kopyov"><i class="icon-bubble3"></i></a>
-									</div>
-	              </div>
+	        		<% if(groups.length >0) { %>
+								<% for(var i = 0; i < groups.length; i++) { %>
+									<li class="message-list-header"><%= groups[i]['name'] %></li>
+									<!-- <li>
+			              <div class="clearfix">
+			                <div class="chat-member">
+												<h6>Thi thử lần 1 <span class="status status-success"></span> <small>&nbsp; /&nbsp; Toán 12, Toán 11</small></h6>
+											</div>
+											<div class="chat-actions">
+												<a href="#" class="btn btn-link btn-icon btn-xs"><i class="icon-marker"></i></a>
+												<a class="btn btn-link btn-icon btn-xs" data-toggle="collapse" href="#eugene_kopyov"><i class="icon-bubble3"></i></a>
+											</div>
+			              </div>
 
-	              <div class="panel-collapse collapse" id="eugene_kopyov">
-									<h1>Chat Facebook</h1>
-	              </div>
-	        		</li>
+			              <div class="panel-collapse collapse" id="eugene_kopyov">
+											<h1>Chat Facebook</h1>
+			              </div>
+			        		</li> -->
+			        		 <% } %>
+							<% } %>	
 	        	</ul>
 		    	</div>
         </div>
@@ -152,7 +158,7 @@
 				  }
 				  $.post('/manager/group-join', {name: inputValue}, function(res) {
 				  	if(res.ok) {
-				  		swal("Thành công!", "Bạn đã tham gia nhóm "+inputValue, "success");
+				  		swal.showInputSuccess('Yêu cầu tham gia nhóm '+inputValue+' đã được gửi');
 				  	} else {
 				  		swal.showInputError(res.error);
 				    	return false
@@ -172,6 +178,25 @@
 			if (action === 'delete-group') {
 
 			}
+		});
+
+		$('a[href="#groups"]').on('click', function(e) {
+			$.post('/group-list-exam', {groups: groups}, function(res){
+				if(res.ok) {
+					var exams = res.exams;
+					var list = $('#groups ul');
+					for (var i = 0; i < exams.length; i++) {
+						if (exams[i].exams.length > 0) {
+							var arr = exams[i].exams, html= '';
+							for (var j = 0; j < arr.length; j++) {
+								html += '<li> <div class="clearfix"> <div class="chat-member"> <h6>'+arr[j].name+'<span class="status status-success"></span> </h6> </div> <div class="chat-actions"> <a href="/test/'+arr[j].link+'" class="btn btn-link btn-icon btn-xs" target="_blank"><i class="icon-marker"></i></a> <a class="btn btn-link btn-icon btn-xs" data-toggle="collapse" href="#'+arr[j].link+'"><i class="icon-bubble3"></i></a> </div> </div> <div class="panel-collapse collapse" id="'+arr[j].link+'"> <h1>Chat Facebook</h1> </div> </li>';
+							}
+							$(html).insertAfter(list.find('li:eq('+i+')'))
+						}
+					}
+					console.log(res.exams)
+				}
+			})
 		})
 	</script>
 </div>
