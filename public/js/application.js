@@ -96,7 +96,7 @@ $(function() {
 
 	//===== Elastic textarea =====//
 	
-	$('.elastic').autosize();
+	autosize($('.elastic'));
 
 	
 	//===== Dual select boxes =====//

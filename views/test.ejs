@@ -10,16 +10,17 @@
 		font-size: 14px;
 		line-height: 1.5;
 	}
+	p { font-size: 13px }
 	label {font-weight: 400}
 	.exam-header {
 		background: #848484;
-	    padding: 20px 0;
-	    -webkit-box-shadow: 0 4px 0 rgba(0,0,0,.1);
-	    box-shadow: 0 4px 0 rgba(0,0,0,.1);
-	    position: fixed;
-	    width: 100%;
-	    z-index: 111;
-	    top: 0;
+    padding: 20px 0;
+    -webkit-box-shadow: 0 4px 0 rgba(0,0,0,.1);
+    box-shadow: 0 4px 0 rgba(0,0,0,.1);
+    position: fixed;
+    width: 100%;
+    z-index: 111;
+    top: 0;
 	}
 	.exam-content {
 		margin-top: 100px;
@@ -27,24 +28,24 @@
 	}
 	.exam-time {
 		color: #fff;
-	    font-size: 20px;
-	    font-weight: 700;
-	    text-shadow: 0 4px 0 rgba(0,0,0,.1);
+    font-size: 20px;
+    font-weight: 700;
+    text-shadow: 0 4px 0 rgba(0,0,0,.1);
 	}
 	.exam-question {
 		margin: 20px;
 	}
 	.exam-question > label {
-	    margin-left: 20px;
+	  margin-left: 20px;
 	}
 	.panel-body {
 		border: 1px solid;
-	    border-color: #e5e6e9 #dfe0e4 #d0d1d5;
-	    border-radius: 3px;
+    border-color: #e5e6e9 #dfe0e4 #d0d1d5;
+    border-radius: 3px;
 	}
 	.MJXc-display {
-	    display: inline-block !important;
-	    margin: 0 0.5em !important;
+    display: inline-block !important;
+    margin: 0 0.5em !important;
 	}
 </style>
 <div class="exam-header">
@@ -63,7 +64,10 @@
 		<h4><%= exam_info %></h4>
 		<% for(var i = 0; i < questions.length; i++) { %>
 			<div class="exam-question" data-question="<%= questions[i]['_id'] %>">
-				<h5><%= (i+1)+'.  '+questions[i]['question'] %></h5>
+				<% if(questions[i]['info'] != '') { %>
+					<h5><%= questions[i]['info'] %></h5>
+				<% } %>
+				<p><%= (i+1)+'.  '+questions[i]['question'] %></p>
 				<% if(questions[i]['answers'] != undefined) { %>
 					<% for(var j = 0; j < questions[i]['answers'].length; j++) { %>
 						<label class="<%= questions[i]['type']+questions[i]['style'] %> <%= questions[i]['type']+'-success' %>">

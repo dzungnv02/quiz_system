@@ -92,7 +92,7 @@
 			}] // array lịch sử làm bài
 		}], // array user tham gia làm bài
 	},
-	"tag_subject": {
+	"subject_tag": {
 		"_id": "589dc0e459a1cb0fac142656",
 		"name": "" // tên tag, vd: Toán 9, Toán 10....
 	},
