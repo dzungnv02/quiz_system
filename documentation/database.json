@@ -3,7 +3,8 @@
 		"_id": "589dc0e459a1cb0fac142656",
 		"username": "",
 		"password": "",
-		"group": [],
+		"group": [], // array _id group
+		"exam": [], // array _id exam_online
 		"is_admin": false,
 		"is_creator": false, // true nếu là người tạo bài kiểm tra
 	},
@@ -44,6 +45,7 @@
 		"done": false, // true khi không có lỗi hay thông tin điền thiếu khi tạo bài
 		"tags": [], // array các môn học trong bài kiểm tra, vd: Toán 9, Toán 8
 		"groups": [], // array _id group
+		"info": "", // thông tin về bài kiểm tra
 		"link": "", // id chia sẻ bài, _id của exam_online tương ứng
 		"show_score": false, // cho phép xem điểm khi nộp bài
 		"show_hint": false, // cho phép xem đáp án đúng khi nộp bài
@@ -76,15 +78,15 @@
 		"users": [{
 			"user": "", // id của user
 			"logs": [{
-				"questions": [], // array id câu hỏi
 				"cheatsheet": [], // array index câu trả lời đúng
+				"answers": [], // array index câu trả lời của người dùng
 				"date": "", // thời gian
 				"score": 0, // điểm đạt được
 				"done": false, // true nếu hoàn thành
 				"finish_time": 0 // thời gian nộp bài
 			},{
-				"questions": [],
 				"cheatsheet": [],
+				"answers": [],
 				"date": "",
 				"score": 0,
 				"done": false,
