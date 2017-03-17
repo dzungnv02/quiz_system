@@ -1,0 +1,189 @@
+<div style="margin-top: 20px">
+	<div class="chat-member-heading clearfix">
+		<h6 class="pull-left"><i class="icon-users"></i> Hoạt động gần đây</h6>
+  </div>
+	<div class="block">
+  	<ul class="message-list">
+  		<% if(data.exams.histories.length > 0) { %>
+				<% for(var i = 0; i < 5; i++) { %>
+					<% if(data.exams.histories[i]) { %>
+					<li>
+						<div class="clearfix">
+							<div class="chat-member">
+								<h6><%= data.exams.histories[i].name %><span class="status status-success"></span> <small>/ <%= data.exams.histories[i].question_number %> câu, thời gian <%= data.exams.histories[i].time %> phút</small></h6>
+							</div>
+							<div class="chat-actions">
+								<a href="/test/<%= data.exams.histories[i].link %>" class="btn btn-link btn-icon btn-xs" target="_blank"><i class="icon-marker"></i></a>
+								<a class="btn btn-link btn-icon btn-xs" data-index="<%= i %>" data-exam="<%= data.exams.histories[i].link %>" data-action="get-histories" data-toggle="collapse" href="#histories<%= i %>"><i class="icon-tree3"></i></a>
+							</div>
+						</div>
+						<div class="panel-collapse collapse" id="histories<%= i %>">
+							<div class="block">
+								<div class="row">
+									<div class="col-md-6">
+										<div id="chart<%= i %>" class="graph"></div>
+									</div>
+									<div class="col-md-6">
+										<div class="container-fluid score-board">
+											<div>
+												<p>Điểm số trung bình</p>
+												<p>Số lần làm</p>
+												<p>Thời gian làm trung bình</p>
+												<p>Ngày làm gần nhất</p>
+											</div>
+											<div class="analytics-number text-right"></div>
+										</div>
+									</div>
+								</div>
+					    </div>
+					  </div>
+					</li>
+					<% } %>
+      	<% } %>
+			<% } %>	
+  	</ul>
+	</div>
+
+	<div class="chat-member-heading clearfix">
+		<h6 class="pull-left"><button type="button" data-action="join-group" class="btn btn-success btn-icon btn-xs"><i class="icon-plus-circle"></i></button> Nhóm</h6>
+		<div class="pull-right" style="width: 400px">
+			<form action="#" role="form">
+				<div class="input-group">
+					<input type="text" class="form-control autocomplete ui-autocomplete-input" placeholder="Tìm nhóm..." autocomplete="off"><span role="status" aria-live="polite" class="ui-helper-hidden-accessible"></span>
+					<span class="input-group-btn">
+						<button class="btn btn-primary btn-icon" type="button"><i class="icon-search3"></i></button>
+					</span>
+				</div>
+			</form>
+		</div>
+  </div>
+	<div class="block">
+  	<ul class="message-list">
+  		<% if(data.groups.list.length >0) { %>
+				<% for(var i = 0; i < data.groups.list.length; i++) { %>
+					<li class="message-list-header"><%= data.groups.list[i].name %>
+						<a href="#" class="pull-right">Xem tất cả</a>
+					</li>
+					<% for(var j = 0; j < data.groups.list[i].exams.length; j++) { %>
+						<li>
+							<div class="clearfix">
+								<div class="chat-member">
+									<h6><%= data.groups.list[i].exams[j].name %>
+									<small>/ <%= data.groups.list[i].exams[j].questions.length %> câu, thời gian <%= data.groups.list[i].exams[j].time / 60 %> phút</small></h6>
+								</div>
+								<div class="chat-actions">
+									<a href="/test/<%= data.groups.list[i].exams[j].link %>" class="btn btn-link btn-icon btn-xs" target="_blank"><i class="icon-marker"></i></a>
+									<a class="btn btn-link btn-icon btn-xs" data-index="<%= i+'-'+j %>" data-exam="<%= data.groups.list[i].exams[j].link %>" data-action="get-histories" data-toggle="collapse" href="#histories<%= i+'-'+j %>"><i class="icon-tree3"></i></a>
+								</div>
+							</div>
+							<div class="panel-collapse collapse" id="histories<%= i+'-'+j %>">
+								<div class="block">
+									<div class="row">
+										<div class="col-md-6">
+											<div id="chart<%= i+'-'+j %>" class="graph"></div>
+										</div>
+										<div class="col-md-6">
+											<div class="container-fluid score-board">
+												<div>
+													<p>Điểm số trung bình</p>
+													<p>Số lần làm</p>
+													<p>Thời gian làm trung bình</p>
+													<p>Ngày làm gần nhất</p>
+												</div>
+												<div class="analytics-number text-right"></div>
+											</div>
+										</div>
+									</div>
+						    </div>
+							</div>
+						</li>
+					<% } %>
+      	<% } %>
+			<% } %>	
+  	</ul>
+	</div>
+	<script>
+		var groups = '<%= data.groups.array %>'.split(',');
+		$('[data-action]').on('click', function(e) {
+			e.preventDefault();
+			var action = $(this).data('action');
+			if (action === 'join-group') {
+				swal({
+				  title: "Nhóm !",
+				  type: "input",
+				  showCancelButton: true,
+				  closeOnConfirm: false,
+				  confirmButtonText: "Tham gia",
+		  		cancelButtonText: "Hủy",
+				  showLoaderOnConfirm: true,
+				  animation: "slide-from-top",
+				  inputPlaceholder: "Nhập tên nhóm.."
+				},
+				function(inputValue){
+				  if (inputValue === false) return false;
+				  
+				  if (inputValue === "") {
+				    swal.showInputError("Tên nhóm không được bỏ trống!");
+				    return false
+				  }
+				  $.post('/manager/group-join', {name: inputValue}, function(res) {
+				  	if(res.ok) {
+				  		swal.showInputSuccess('Yêu cầu tham gia nhóm '+inputValue+' đã được gửi');
+				  	} else {
+				  		swal.showInputError(res.error);
+				    	return false
+				  	}
+				  })
+				})
+			};
+			if (action === 'users-group') {
+				$.post('/manager/group-users', {id: $(this).data('group')}, function(res) {
+			  	if(res.ok) {
+			  		swal("Thành công!", "Nhóm " + inputValue+" đã được tạo", "success");
+			  	} else {
+			    	return false
+			  	}
+			  })
+			};
+			if (action === 'get-histories') {
+				var that = $(this);
+				$.post('/get-histories', {id: that.data('exam')}, function(res) {
+			  	if(res.ok) {
+						var chart_data = {
+							score: [],
+							label: []
+						};
+						for (var i = 0; i < res.data.scores.length; i++) {
+							chart_data.score.push([i, Number(res.data.scores[i])] );
+							chart_data.label.push(res.data.scores[i])
+						}
+						var dataset = { data: chart_data.score, points: { show: true }, showLabels: true, labels: chart_data.label, labelPlacement: "above", canvasRender: true, cColor: "#8bc34a" };
+			  		var chart = $('#chart'+that.data('index'));
+						var analytics_div = chart.parent().parent().find('.analytics-number');
+						$.plot(chart, [dataset], plot_options);
+						analytics_div.html('<p>'+res.data.avg_score+'</p><p>'+res.data.try_number+'</p><p>'+msToTime(res.data.avg_time_finish)+'</p><p>'+moment(res.data.last_try).format("DD/MM/YYYY")+'</p>')
+			  	} else return false
+			  })
+			}
+		});
+
+		$('a[href="#groups"]').on('click', function(e) {
+			var list = $('#groups ul');
+			list.find('li:not(".message-list-header")').remove();
+			$.post('/group-list-exam', {groups: groups}, function(res){
+				if(res.ok) {
+					var exams = res.exams;
+					for (var i = 0; i < exams.length; i++) {
+						if (exams[i].exams.length > 0) {
+							var arr = exams[i].exams, html= '';
+							for (var j = 0; j < arr.length; j++) {
+								html += '<li> <div class="clearfix"> <div class="chat-member"> <h6>'+arr[j].name+'<span class="status status-success"></span> <small>/ '+arr[j].question_number+' câu, thời gian '+arr[j].time/60+' phút</small></h6> </div> <div class="chat-actions"> <a href="/test/'+arr[j].link+'" class="btn btn-link btn-icon btn-xs" target="_blank"><i class="icon-marker"></i></a> <a class="btn btn-link btn-icon btn-xs" data-toggle="collapse" href="#'+arr[j].link+'"><i class="icon-bubble3"></i></a> </div> </div> <div class="panel-collapse collapse" id="'+arr[j].link+'"> <h1>Chat Facebook</h1> </div> </li>';
+							}
+							$(html).insertAfter(list.find('li.message-list-header:eq('+i+')'))
+						}
+					}
+				} else console.log(res.error)
+			})
+		})
+	</script>
+</div>
