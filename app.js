@@ -1034,9 +1034,11 @@ modules.mongo.MongoClient.connect(database_server, function(err, db) {
 // END FUNCTIONS
 
 // START APP
-	var server = app.listen(3000, function () {
-		let host = server.address().address;
-		let port = server.address().port;
+	var server = app.listen(9810, function () {
+		//var host = server.address().address;
+		var host = '192.168.111.136';
+		var port = server.address().port;
+		console.log(server);
 		console.log('Listening at http://%s:%s', host, port);
 	})
 // END START APP
