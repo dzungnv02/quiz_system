@@ -5738,11 +5738,11 @@ li.plupload_droptext {
 }
 .message-list > li { 
   padding: 15px 0 16px 0; 
-  border-bottom: 1px solid #e5e5e5; 
+  border-bottom: 1px solid #f5f5f5; 
   position: relative; 
 }
 .message-list > li:first-child { 
-  border-top: 1px solid #e5e5e5; 
+  border-top: 1px solid #f5f5f5; 
 }
 .message-list > li.message-list-header { 
   font-weight: 600; 
@@ -6023,7 +6023,7 @@ textarea {
 .load-question-container, .load-exam-container {
   height: 300px;
   overflow: auto;
-  padding: 10px 10px 0 0
+  padding: 10px 0
 }
 .load-question-container h5, .load-exam-container h5 {
   font-size: 13px;
@@ -6071,4 +6071,95 @@ textarea {
 .center {
   margin: 0 auto;
   display: block;
+}
+.text-wrap {
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 90%;
+}
+.text-bold {
+  font-weight: 600
+}
+.group-list {
+  padding: 0;
+  margin: 10px 0
+}
+.group-list li {
+  list-style: none;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+
+.fblwtia-mask {
+  background: #f9f9f9;
+  position: absolute;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  height: 10px;
+}
+
+.fblwtia-title-line {
+  left: 0;
+  height: 20px;
+  width: 100%;
+}
+.fblwtia-title-mask-0 {
+  left: 0;
+}
+
+.fblwtia-title-mask-1 {
+  bottom: 0;
+}
+.fblwtia-sepline-sapo {
+  top: 20px;
+  width: 20px;
+  height: 32px;
+}
+.fblwtia-sapo-line-0 {
+  left: 0;
+}
+.fblwtia-sapo-line-1 {
+  left: 15%
+}
+.fblwtia-sapo-line-2 {
+  left: 45%;
+  width: 45%
+}
+.fblwtia-sapo-line-3 {
+  right: 0
+}
+
+.fblwti-animated {
+  animation-duration: 1.5s;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+  animation-name: placeHolderShimmer;
+  animation-timing-function: linear;
+  background: #f6f7f8;
+  background: linear-gradient(to right,#eee 8%,#ddd 18%,#eee 33%);
+  background-size: 800px 200px;
+  height: 110px;
+  position: relative;
+}
+
+@-webkit-keyframes placeHolderShimmer {
+  0% {
+    background-position: -800px 0;
+  }
+
+  100% {
+    background-position: 800px 0;
+  }
+}
+
+.fblwti-animated {
+  height: 52px;
+}
+
+.fb-loading-wrapper {
+  padding: 25px 0
 }
