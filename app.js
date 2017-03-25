@@ -38,18 +38,11 @@ var user = {
 	group: require(config.app_path+'/group/index.js')
 }
 
-var exam = {
-	index: require(config.app_path+'/exam/index.js'),
-	online: require(config.app_path+'/exam/online.js')
-}
+var exam = require(config.app_path+'/exam/index.js');
 
-var question = {
-	index: require(config.app_path+'/question/index.js')
-}
+var question = require(config.app_path+'/question/index.js');
 
-var answer = {
-	index: require(config.app_path+'/answer/index.js'),
-}
+var answer = require(config.app_path+'/answer/index.js');
 
 var tag = require(config.app_path+'/tag/index.js');
 
@@ -67,12 +60,11 @@ database.connect_to_server(function(err) {
 	user.group.route(app, auth);
 	user.request.route(app, auth);
 
-	exam.index.route(app, auth);
-	exam.online.route(app, auth);
+	exam.route(app, auth);
 
-	question.index.route(app, auth);
-
-	answer.index.route(app, auth);
+	question.route(app, auth);
+	
+	answer.route(app, auth);
 
 	tag.route(app, auth);
 

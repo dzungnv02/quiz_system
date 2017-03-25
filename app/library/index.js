@@ -39,13 +39,7 @@ module.exports = {
 				}
 		});
 		app.get('/library', auth.is_creator, function(req, res) {
-			res.redirect('/library/questions')
-		});
-		app.get('/library/questions', auth.is_creator, function(req, res) {
-			  
-		});
-		app.get('/library/files', auth.is_creator, function(req, res) {
-		  res.render('layout', {
+			res.render('layout', {
 				page: 'main',
 				body_class: '',
 				content: 'library/library',
@@ -54,5 +48,6 @@ module.exports = {
 				username: req.user.username,
 			})
 		});
+		
   }
 };
