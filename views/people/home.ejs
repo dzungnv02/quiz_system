@@ -1,0 +1,170 @@
+<div style="margin-top: 20px">
+
+	<div class="block col-md-3">
+		<h6><button type="button" data-action="join-group" class="btn btn-success btn-icon btn-xs"><i class="icon-plus-circle"></i></button> Nhóm</h6>
+	  <input type="text" id="group-search" class="form-control autocomplete ui-autocomplete-input" placeholder="Tìm nhóm..." autocomplete="off">
+  	<ul class="group-list"></ul>
+	</div>
+
+	<div class="block col-md-9">
+		<div class="clearfix">
+			<h6 class="pull-left"><i class="icon-users"></i> <span>Hoạt động gần đây</span></h6>
+	  </div>
+  	<ul class="message-list exam-list">
+  		<% if(exams.length > 0) { %>
+				<% for(var i = 0; i < 5; i++) { %>
+					<% if(exams[i]) { %>
+					<li>
+						<div class="clearfix">
+							<div class="chat-member">
+								<h6><%= exams[i].name %><span class="status status-success"></span> <small>/ <%= exams[i].questions.length %> câu, thời gian <%= exams[i].time / 60 %> phút</small></h6>
+							</div>
+							<div class="chat-actions">
+								<a href="/test/<%= exams[i].link %>" class="btn btn-link btn-icon btn-xs" target="_blank"><i class="icon-marker"></i></a>
+								<a class="btn btn-link btn-icon btn-xs" data-index="<%= i %>" data-exam="<%= exams[i].link %>" data-action="get-histories" data-toggle="collapse" href="#histories<%= i %>"><i class="icon-tree3"></i></a>
+							</div>
+						</div>
+						<div class="panel-collapse collapse" id="histories<%= i %>">
+							<div class="block">
+								<div class="row">
+									<div class="col-md-6">
+										<div id="chart<%= i %>" class="graph"></div>
+									</div>
+									<div class="col-md-6">
+										<div class="container-fluid score-board">
+											<div>
+												<p>Điểm số trung bình</p>
+												<p>Số lần làm</p>
+												<p>Thời gian làm trung bình</p>
+												<p>Ngày làm gần nhất</p>
+											</div>
+											<div class="analytics-number text-right"></div>
+										</div>
+									</div>
+								</div>
+					    </div>
+					  </div>
+					</li>
+					<% } %>
+      	<% } %>
+			<% } %>
+  	</ul>
+	</div>
+
+	<script>
+		var glist = $('.group-list');
+		var elist = $('.exam-list');
+		var exam_list = [];
+
+		$.post('/group-search', {string: ''}, function(res) {
+			glist.html(group_search_render(res, true))
+		})
+
+		$('[data-action]').on('click', function(e) {
+			e.preventDefault();
+			var action = $(this).data('action');
+			if (action === 'join-group') {
+				swal({
+				  title: "Nhóm !",
+				  type: "input",
+				  showCancelButton: true,
+				  closeOnConfirm: false,
+				  confirmButtonText: "Tham gia",
+		  		cancelButtonText: "Hủy",
+				  showLoaderOnConfirm: true,
+				  animation: "slide-from-top",
+				  inputPlaceholder: "Nhập tên nhóm.."
+				},
+				function(inputValue){
+				  if (inputValue === false) return false;
+				  
+				  if (inputValue === "") {
+				    swal.showInputError("Tên nhóm không được bỏ trống!");
+				    return false
+				  }
+				  $.post('/manager/group-join', {name: inputValue}, function(res) {
+				  	if(res.ok) {
+				  		swal.showInputSuccess('Yêu cầu tham gia nhóm '+inputValue+' đã được gửi');
+				  	} else {
+				  		swal.showInputError(res.error);
+				    	return false
+				  	}
+				  })
+				})
+			};
+			if (action === 'users-group') {
+				$.post('/manager/group-users', {id: $(this).data('group')}, function(res) {
+			  	if(res.ok) {
+			  		swal("Thành công!", "Nhóm " + inputValue+" đã được tạo", "success");
+			  	} else {
+			    	return false
+			  	}
+			  })
+			}
+		});
+
+		$('#group-search').on('change', function(e) {
+			glist.empty();
+			var step = 5;
+			var data = {
+				string: $(this).val().trim()
+			}
+			if(step) data.step = step
+			else step = 0
+			$.post('/group-search', data, function(res) {
+				glist.html(group_search_render(res, true))
+			})
+		});
+
+		var group_search_render = function(res, group_only) {
+			var html = '';
+			for (var i = 0; i < res.length; i++) {
+				if (group_only) {
+					exam_list[res[i]._id] = res[i].exams;
+					html += templates.group_list(res[i])
+				} else {
+					html += templates.exam_list(res[i]);
+				}
+			}
+			return html
+		};
+
+		glist.on('click', '[data-action="group-view-exam"]', function() {
+			var that = $(this);
+			var group = that.data('group');
+			elist.parent().find('h6 > span').html(that.text());
+			elist.empty().html(frontend_exam_loading_block(3));
+			$.post('/group-view-exam', {group: group, exams: exam_list[group]}, function(res) {
+				setTimeout(function () {
+					elist.empty().append(group_search_render(res))
+				}, 1000)
+			})
+		});
+
+		elist.on('click', '[data-action="get-histories"]', function() {
+			var that = $(this);
+			var panel = $('#histories'+that.data('index'));
+			$.post('/get-histories', {id: that.data('exam')}, function(res) {
+		  	if(res.ok) {
+		  		if (res.data.try_number != 0) {
+		  			var chart_data = {
+							score: [],
+							label: []
+						};
+						for (var i = 0; i < res.data.scores.length; i++) {
+							chart_data.score.push([i, Number(res.data.scores[i])] );
+							chart_data.label.push(res.data.scores[i])
+						}
+						var dataset = { data: chart_data.score, points: { show: true }, showLabels: true, labels: chart_data.label, labelPlacement: "above", canvasRender: true, cColor: "#8bc34a" };
+			  		var chart = panel.find('#chart'+that.data('index'));
+						var analytics_div = panel.find('.analytics-number');
+						$.plot(chart, [dataset], plot_options);
+						analytics_div.html('<p>'+res.data.avg_score+'</p><p>'+res.data.try_number+'</p><p>'+msToTime(res.data.avg_time_finish)+'</p><p>'+moment(res.data.last_try).format("DD/MM/YYYY")+'</p>')
+		  		} else {
+		  			panel.html('<p class="text-center text-muted">Không có thống kê</p')
+		  		}
+		  	} else return false
+		  })
+		})
+	</script>
+</div>
