@@ -1,6 +1,6 @@
 <div class="page-header">
 	<div class="page-title">
-		<h3>Danh sách nhóm <small>Thành viên tối đa mỗi nhóm là 500,000 người</small></h3>
+		<h3>Danh sách nhóm <small>Thành viên tối đa mỗi nhóm là 1,000 người</small></h3>
 	</div>
 
 	<div class="visible-xs header-element-toggle">
@@ -15,35 +15,42 @@
     </div>
 	</div>
 </div>
-<ul class="statistics">
-	<% for(var i = 0; i < groups.length; i++) { %>
-	<li>
-		<div class="statistics-info">
-			<a href="#" title="" class="bg-primary"><i class="icon-people"></i></a>
-			<strong><%= groups[i]['users'].length %> 
-				<% if(groups[i]['join_requests'].length > 0) { %>
-					<small style="font-size:11px" class="text-info" data-action="list-join-requests" data-group="<%= groups[i]['_id'] %>"> + <%= groups[i]['join_requests'].length %>  yêu cầu gia nhập</small>
-				<% } %>
-			</strong>
-			<div class="pull-right">
-				<div class="btn-group">
-	        <button type="button" class="btn btn-icon btn-info dropdown-toggle" data-toggle="dropdown"><i class="icon-arrow-down2"></i></button>
-					<ul class="dropdown-menu icons-right dropdown-menu-right">
-						<li><a href="#" data-group="<%= groups[i]['_id'] %>" data-action="users-group">Danh sách thành viên</a></li>
-						<li class="divider"></li>
-						<li><a href="#" data-group="<%= groups[i]['_id'] %>" data-action="delete-group">Xóa</a></li>
-					</ul>
-	      </div>
+
+<div class="row">
+<% for(var i = 0; i < groups.length; i++) { %>
+<div class="col-lg-3 col-md-6 col-sm-6">
+	<div class="card">
+		<div class="content">
+			<div class="row">
+				<div class="col-xs-5">
+					<span class="ant-badge">
+						<span class="icon-big icon-people"></span>
+						<% if(groups[i]['join_requests'].length > 0) { %>
+							<span class="ant-scroll-number ant-badge-count">
+								<%= groups[i]['join_requests'].length %>
+							</span>
+						<% } %>
+					</span>
+					
+				</div>
+				<div class="col-xs-7">
+					<div class="numbers">
+						<p><%= groups[i]['name'] %></p>
+						<%= groups[i]['users'].length %> 
+					</div>
+				</div>
 			</div>
-		</div>
-		<div class="progress progress-micro">
-			<div class="progress-bar progress-bar-success" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: <%= (groups[i]['users'].length / 500000) * 100 %>">
-			</div>
-		</div>
-		<span><%= groups[i]['name'] %></span>
-	</li>
-	<% } %>
-</ul>
+		</div>   
+	  <div class="card-footer">
+	    <div class="stats">
+	    	<span data-group="<%= groups[i]['_id'] %>" data-action="users-group">Danh sách thành viên</span>
+	    	<span data-group="<%= groups[i]['_id'] %>" data-action="delete-group">x</span>
+	    </div>
+	  </div>
+	</div>
+</div>
+<% } %>
+</div>
 
 <div id="join-requests" class="modal fade" tabindex="-1" role="dialog">
 	<div class="modal-dialog">

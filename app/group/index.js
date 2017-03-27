@@ -5,19 +5,18 @@ module.exports = {
 	route: function(app, auth) {
 		let route = routes.creator.group;
 
-		app.post(route.index.path, auth.is_authenticated, function (req, res) {
-      let user = req.user;
-			func.find_by_creator(_collection('user_group'), user._id, function(err, groups) {
+		app.get(route.index.path, auth.is_authenticated, function (req, res) {
+			_group.get_index(req.user, function(err, groups) {
 				if(err) return res.send({ok: false, error: err});
 				res.render('layout', {
 					page: 'main',
 					body_class: '',
 					content: 'creator/group',
-					title: 'Nhóm',
+					title: route.index.title,
 					groups: groups,
 					username: req.user.username
 				})
-			})
+      })
     });
 		app.post(route.create, auth.is_authenticated, function (req, res) {
       _group.do_create(req.body, function(err, obj){

@@ -27,6 +27,9 @@ var accept_join_request = function(user, target, callback) {
 }
 
 module.exports = {
+	get_index: function(user, _callback) {
+		func.find_by_creator(_collection('user_group'), user._id, _callback)
+	},
 	do_create: function(data, user, _callback) {
 		if (data.title) {
 			let insert = {

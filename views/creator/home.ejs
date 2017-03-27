@@ -1,39 +1,37 @@
-<div class="panel">
-	<div class="panel-body">
-		<% for(var i = 0; i < exams.length; i++) { %>
-			<div data-exam="<%= exams[i]['_id'] %>">
-				<div class="pull-right">
-					<div class="btn-group">
-            <button type="button" class="btn btn-icon btn-success dropdown-toggle" data-toggle="dropdown"><i class="icon-cog4"></i></button>
-						<ul class="dropdown-menu icons-right dropdown-menu-right" data-exam="<%= exams[i]['_id'] %>">
-							<li><a href="#" data-action="edit-exam">Chỉnh sửa</a></li>
-							<li><a href="#" data-link="<%= exams[i]['link'] %>" data-action="share-exam">Chia sẻ</a></li>
-							<li><a href="#" data-action="">Thống kê</a></li>
-							<li class="divider"></li>
-							<li><a href="#" data-action="delete-exam">Xóa</a></li>
-						</ul>
-          </div>
-				</div>
-				<h5><%= exams[i]['name'] %>
-					<% if(exams[i]['link']) { %>
-						<span class="label label-success">Đang chia sẻ</span>
-					<% } %>
-				</h5>
-				<ul class="headline-info">
-					<li><%= exams[i]['questions'].length %> câu hỏi</li>
-					<li>nhóm 
-					<% if(exams[i].groups) { %>
-						<% for(var j = 0; j < exams[i].groups.length; j++) { %>
-							<span data-group="<%= exams[i].groups[j]._id %>" class="text-semibold text-info"><%= exams[i].groups[j].name %></span>,
-						<% } %>
-					<% } %>
-						<span data-action="add-group" data-link="<%= exams[i]['link'] %>" class="text-semibold text-success"> + thêm nhóm</span>
-					</li>
+
+<% for(var i = 0; i < exams.length; i++) { %>
+	<div class="project-item card" data-exam="<%= exams[i]['_id'] %>">
+		<div class="project-item-title">
+			<span class="title"><%= exams[i]['name'] %>
+				<% if(exams[i]['link']) { %>
+					<span class="status-indicator online"></span>
+				<% } %>
+			</span>
+			<div class="action">
+        <i class="icon-wrench2 text-muted dropdown-toggle" data-toggle="dropdown"></i>
+				<ul class="dropdown-menu icons-right dropdown-menu-right" data-exam="<%= exams[i]['_id'] %>">
+					<li><a href="#" data-action="edit-exam">Chỉnh sửa</a></li>
+					<li><a href="#" data-link="<%= exams[i]['link'] %>" data-action="share-exam">Chia sẻ</a></li>
+					<li><a href="#" data-action="">Thống kê</a></li>
+					<li class="divider"></li>
+					<li><a href="#" data-action="delete-exam">Xóa</a></li>
 				</ul>
-			</div>
-		<% } %>
+      </div>
+		</div>
+		<ul class="headline-info">
+			<li><%= exams[i]['questions'].length %> câu hỏi</li>
+			<li>nhóm 
+			<% if(exams[i].groups) { %>
+				<% for(var j = 0; j < exams[i].groups.length; j++) { %>
+					<span data-group="<%= exams[i].groups[j]._id %>" class="text-semibold text-info"><%= exams[i].groups[j].name %></span>,
+				<% } %>
+			<% } %>
+				<span data-action="add-group" data-link="<%= exams[i]['link'] %>" class="text-success"> + thêm nhóm</span>
+			</li>
+		</ul>
 	</div>
-</div>
+<% } %>
+
 <div class="load-group modal fade" tabindex="-1" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">

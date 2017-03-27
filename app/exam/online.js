@@ -62,14 +62,14 @@ module.exports = {
         })
       },
       function(data, callback) {
-        func.find_by_id(exam_collection, data.exam, function(err, exam) {
+        func.find_by_id(_collection('exam_online'), data.exam, function(err, exam) {
           if (err) return callback(err);
           data.exam = exam;
           callback(null, data)
         })
       },
       function(data, callback) {
-        func.find_by_id(question_collection, data.exam.questions, function(err, questions) {
+        func.find_by_id(_collection('question'), data.exam.questions, function(err, questions) {
           if (err) return callback(err);
           data.qa = func.question_reformat(questions, data.exam.shuffle);
           callback(null, data)

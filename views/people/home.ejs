@@ -1,54 +1,125 @@
 <div style="margin-top: 20px">
 
+<style type="text/css">
+.ks-panels-column-section > .card + .card, .ks-panels-column-section > .card + .ks-widget, .ks-panels-column-section > .ks-widget + .card, .ks-panels-column-section > .ks-widget + .ks-widget {
+    margin-top: 30px;
+}
+.ks-widget-overview {
+    background: rgb(255, 255, 255);
+    border-radius: 2px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgb(222, 224, 225);
+    border-image: initial;
+}
+.ks-widget-overview > .ks-body {
+    padding: 30px;
+}
+.ks-widget-overview > .ks-footer {
+    display: flex;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+    padding: 18px 30px;
+    background: rgba(57, 80, 155, 0.0470588);
+    border-top: 1px solid rgb(222, 224, 225);
+}
+.ks-widget-overview > .ks-body > .ks-header {
+    line-height: 14px;
+    margin: 0px 0px 30px;
+}
+.ks-widget-overview > .ks-body > .ks-items {
+    list-style: none;
+    padding: 0px;
+    margin: 0px;
+}
+.ks-widget-overview > .ks-body > .ks-items > .ks-item {
+    display: flex;
+    -webkit-box-align: center;
+    align-items: center;
+    margin-bottom: 15px;
+}
+.ks-widget-overview > .ks-body > .ks-items > .ks-item > .ks-icon {
+    width: 36px;
+    height: 36px;
+    background-color: rgba(57, 80, 155, 0.0470588);
+    margin-right: 15px;
+    color: rgb(43, 76, 126);
+    font-size: 19px;
+    text-align: center;
+    line-height: 36px;
+    border-radius: 2px;
+}
+.ks-widget-overview > .ks-body > .ks-items > .ks-item > .ks-text {
+    font-size: 12px;
+}
+.ks-widget-overview > .ks-footer > .ks-info > .ks-name {
+    color: rgb(43, 76, 126);
+    font-size: 14px;
+    font-weight: 500;
+    display: block;
+    margin-bottom: 2px;
+}
+.ks-widget-overview > .ks-footer > .ks-info > .ks-datetime {
+    display: block;
+    color: rgb(133, 133, 133);
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+.btn-primary-outline.ks-light {
+    color: rgb(43, 76, 126);
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgb(196, 203, 225);
+    border-image: initial;
+    background: rgb(255, 255, 255);
+}
+.btn.ks-no-text {
+    width: 38px;
+    padding: 0px;
+}
+</style>
+	
+
 	<div class="block col-md-3">
+		<div class="ks-widget ks-widget-overview">
+		  <div class="ks-body">
+		      <input type="text" id="group-search" class="ks-header form-control autocomplete ui-autocomplete-input" placeholder="Tìm nhóm..." autocomplete="off">
+		      <ul class="ks-items">
+		          <li class="ks-item">
+		              <span class="icon-puzzle2 ks-icon"></span>
+		              <span class="ks-text">6 properties</span>
+		          </li>
+		          <li class="ks-item">
+		              <span class="icon-puzzle2 ks-icon"></span>
+		              <span class="ks-text">12 properties</span>
+		          </li>
+		          <li class="ks-item">
+		              <span class="icon-puzzle2 ks-icon"></span>
+		              <span class="ks-text">3 unread</span>
+		          </li>
+		      </ul>
+		  </div>
+		  <div class="ks-footer">
+		      <div class="ks-info">
+		          <span class="ks-name">Premium</span>
+		          <div class="ks-datetime">to september 26, 2016</div>
+		      </div>
+		      <a href="#" class="btn btn-primary-outline ks-light ks-no-text"><span class="icon-puzzle2 ks-icon"></span></a>
+		  </div>
+		</div>
 		<h6><button type="button" data-action="join-group" class="btn btn-success btn-icon btn-xs"><i class="icon-plus-circle"></i></button> Nhóm</h6>
 	  <input type="text" id="group-search" class="form-control autocomplete ui-autocomplete-input" placeholder="Tìm nhóm..." autocomplete="off">
   	<ul class="group-list"></ul>
 	</div>
 
 	<div class="block col-md-9">
-		<div class="clearfix">
-			<h6 class="pull-left"><i class="icon-users"></i> <span>Hoạt động gần đây</span></h6>
-	  </div>
-  	<ul class="message-list exam-list">
-  		<% if(exams.length > 0) { %>
-				<% for(var i = 0; i < 5; i++) { %>
-					<% if(exams[i]) { %>
-					<li>
-						<div class="clearfix">
-							<div class="chat-member">
-								<h6><%= exams[i].name %><span class="status status-success"></span> <small>/ <%= exams[i].questions.length %> câu, thời gian <%= exams[i].time / 60 %> phút</small></h6>
-							</div>
-							<div class="chat-actions">
-								<a href="/test/<%= exams[i].link %>" class="btn btn-link btn-icon btn-xs" target="_blank"><i class="icon-marker"></i></a>
-								<a class="btn btn-link btn-icon btn-xs" data-index="<%= i %>" data-exam="<%= exams[i].link %>" data-action="get-histories" data-toggle="collapse" href="#histories<%= i %>"><i class="icon-tree3"></i></a>
-							</div>
-						</div>
-						<div class="panel-collapse collapse" id="histories<%= i %>">
-							<div class="block">
-								<div class="row">
-									<div class="col-md-6">
-										<div id="chart<%= i %>" class="graph"></div>
-									</div>
-									<div class="col-md-6">
-										<div class="container-fluid score-board">
-											<div>
-												<p>Điểm số trung bình</p>
-												<p>Số lần làm</p>
-												<p>Thời gian làm trung bình</p>
-												<p>Ngày làm gần nhất</p>
-											</div>
-											<div class="analytics-number text-right"></div>
-										</div>
-									</div>
-								</div>
-					    </div>
-					  </div>
-					</li>
-					<% } %>
-      	<% } %>
-			<% } %>
-  	</ul>
+		<div class="page-header">
+			<div class="page-title">
+				<h3>Hoạt động gần đây</h3>
+			</div>
+		</div>
+	  <div class="row exam-list"></div>
 	</div>
 
 	<script>
@@ -58,6 +129,13 @@
 
 		$.post('/group-search', {string: ''}, function(res) {
 			glist.html(group_search_render(res, true))
+		})
+
+		elist.empty().html(frontend_exam_loading_block(3));
+		$.post('/exam-recent-activity', function(res) {
+			setTimeout(function () {
+				elist.empty().html(group_search_render(res.data))
+			}, 1000)
 		})
 
 		$('[data-action]').on('click', function(e) {
@@ -132,7 +210,7 @@
 		glist.on('click', '[data-action="group-view-exam"]', function() {
 			var that = $(this);
 			var group = that.data('group');
-			elist.parent().find('h6 > span').html(that.text());
+			elist.parent().find('.page-title > h3').html(that.text());
 			elist.empty().html(frontend_exam_loading_block(3));
 			$.post('/group-view-exam', {group: group, exams: exam_list[group]}, function(res) {
 				setTimeout(function () {
@@ -144,6 +222,7 @@
 		elist.on('click', '[data-action="get-histories"]', function() {
 			var that = $(this);
 			var panel = $('#histories'+that.data('index'));
+			panel.html(templates.frontend_exam_chart());
 			$.post('/get-histories', {id: that.data('exam')}, function(res) {
 		  	if(res.ok) {
 		  		if (res.data.try_number != 0) {
@@ -156,7 +235,7 @@
 							chart_data.label.push(res.data.scores[i])
 						}
 						var dataset = { data: chart_data.score, points: { show: true }, showLabels: true, labels: chart_data.label, labelPlacement: "above", canvasRender: true, cColor: "#8bc34a" };
-			  		var chart = panel.find('#chart'+that.data('index'));
+			  		var chart = panel.find('.graph');
 						var analytics_div = panel.find('.analytics-number');
 						$.plot(chart, [dataset], plot_options);
 						analytics_div.html('<p>'+res.data.avg_score+'</p><p>'+res.data.try_number+'</p><p>'+msToTime(res.data.avg_time_finish)+'</p><p>'+moment(res.data.last_try).format("DD/MM/YYYY")+'</p>')

@@ -89,6 +89,26 @@ module.exports = {
 			} else res.send({ok: false, error: errors.not_enough_info})
 		});
 
+		app.post('/exam-recent-activity', auth.is_authenticated, function (req, res) {
+			let user = req.user;
+			func.find_by_id(db.collection('user_activity'), user._id, function(err, doc) {
+				if (err) return res.send({ok:false, err: err});
+				if (doc) {
+					let tmp = doc.exam;
+					if(tmp.length > 6) tmp = tmp.slice(-5);
+					let exams = [];
+					async.eachSeries(tmp, function(elem, next) {
+						func.find_by_id(db.collection('exam'), elem, function(err, exam) {
+							exams.push(exam);
+							next()
+						})
+					}, function(err) {
+					  res.send({ ok:true, data: func.return_data_with_info(exams,['name','time','questions','link'])})
+					})
+				} else res.send({ ok:false, err: errors.not_found})
+			})
+		});
+
 		app.post('/group-view-exam', auth.is_authenticated, function (req, res) {
 			let data = req.body;
 			let user = req.user;
