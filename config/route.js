@@ -33,6 +33,21 @@ const route = {
 			update: croot+'/answer-update',
 			remove: croot+'/answer-delete',
 		},
+		group: {
+			index: {
+				title: 'Group',
+				path: croot+'/group'
+			},
+			create: croot+'/group-create',
+			remove: croot+'/group-delete',
+			join: croot+'/group-join',
+			request: croot+'/group-requests',
+			user: croot+'/group-users',
+			list: croot+'/group-list',
+		},
+		tag: {
+			list: croot+'/tags-list'
+		}
 	},
 	people: {
 		index: {
