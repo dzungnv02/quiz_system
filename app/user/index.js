@@ -52,7 +52,7 @@ module.exports = {
 	route: function(app, auth) {
 		app.get(routes.people.index.path, auth.is_authenticated, function (req, res) {
 			let user = req.user;
-			if (user.is_admin) res.redirect(routes.creator.index);
+			if (user.is_admin) res.redirect(routes.creator.index.path);
 			ui_frontend_get_data(user, function(err, data) {
 				if(err) return res.send({ok: false, error: err});
 				res.render('layout', {

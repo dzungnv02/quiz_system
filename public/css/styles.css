@@ -6094,7 +6094,7 @@ textarea {
 
 
 .fblwtia-mask {
-  background: #f9f9f9;
+  background: #fff;
   position: absolute;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -6161,5 +6161,204 @@ textarea {
 }
 
 .fb-loading-wrapper {
-  padding: 25px 0
+  margin-bottom: 20px;
+}
+
+.card {
+  border-radius: 6px;
+  box-shadow: 0 2px 2px rgba(204, 197, 185, 0.5);
+  background-color: #FFFFFF;
+  color: #5f5f5f;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 1;
+}
+.card .content {
+  padding: 15px 15px 10px 15px;
+}
+.card .title, .card .stats, .card .category, .card .description, .card .social-line, .card .actions, .card .content, .card .card-footer, .card small, .card a {
+  position: relative;
+  z-index: 3;
+}
+.card .icon-big {
+  font-size: 2em;
+  width: 42px;
+  height: 42px;
+  display: inline-block;
+}
+.card .card-footer {
+  padding: 0 15px 15px;
+}
+.card .stats {
+  color: #a49e93;
+  font-weight: 300;
+  display: flex;
+  justify-content: space-between
+}
+.card .numbers {
+  text-align: right;
+}
+.card .numbers p {
+  margin: 0;
+}
+.ant-badge-count {
+  position: absolute;
+  -webkit-transform: translateX(-50%);
+  -ms-transform: translateX(-50%);
+  transform: translateX(-50%);
+  top: -10px;
+  height: 20px;
+  border-radius: 10px;
+  min-width: 20px;
+  background: rgb(50, 147, 111);
+  color: #fff;
+  line-height: 20px;
+  text-align: center;
+  padding: 0 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  -webkit-transform-origin: -10% center;
+  -ms-transform-origin: -10% center;
+  transform-origin: -10% center;
+  font-family: tahoma;
+  box-shadow: 0 0 0 1px #fff;
+}
+
+
+.project-item {
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  padding: 23px
+}
+.project-item-title {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px
+}
+.project-item-title > .title {
+  position: relative;
+  display: inline-block;
+  font-size: 14px;
+}
+.project-item-title > .action {
+  position: relative;
+}
+.project-item-title > .action [class*="icon-"] {
+  font-size: 12px;
+  padding: 10px;
+  cursor: pointer
+}
+
+.status-indicator {
+  position: absolute;
+  display: block;
+  background-color: #545454;
+  border-radius: 50%;
+  height: 13px;
+  width: 13px;
+  top: 0;
+  right: -10px;
+  border: 2px solid #FFF;
+}
+.status-indicator.online {
+  background-color: #2cc185;
+}
+
+.ks-panels-column-section > .card + .card, .ks-panels-column-section > .card + .ks-widget, .ks-panels-column-section > .ks-widget + .card, .ks-panels-column-section > .ks-widget + .ks-widget {
+  margin-top: 30px;
+}
+.ks-widget-overview {
+  background: rgb(255, 255, 255);
+  border-radius: 2px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgb(222, 224, 225);
+  border-image: initial;
+}
+.ks-widget-overview > .ks-body {
+  padding: 30px;
+}
+.ks-widget-overview > .ks-footer {
+  display: flex;
+  -webkit-box-pack: justify;
+  justify-content: space-between;
+  padding: 18px 30px;
+  background: rgba(57, 80, 155, 0.0470588);
+  border-top: 1px solid rgb(222, 224, 225);
+}
+.ks-widget-overview > .ks-body > .ks-header {
+  line-height: 14px;
+  margin: 0px 0px 30px;
+}
+.ks-widget-overview > .ks-body > .ks-items {
+  list-style: none;
+  padding: 0px;
+  margin: 0px;
+}
+.ks-widget-overview > .ks-body > .ks-items > .ks-item {
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  margin-bottom: 15px;
+}
+.ks-widget-overview > .ks-body > .ks-items > .ks-item > .ks-icon {
+  width: 36px;
+  height: 36px;
+  background-color: rgba(57, 80, 155, 0.0470588);
+  margin-right: 15px;
+  color: rgb(43, 76, 126);
+  font-size: 19px;
+  text-align: center;
+  line-height: 36px;
+  border-radius: 2px;
+}
+.ks-widget-overview > .ks-body > .ks-items > .ks-item > .ks-text {
+  font-size: 12px;
+}
+.ks-widget-overview > .ks-footer > .ks-info > .ks-name {
+  color: rgb(43, 76, 126);
+  font-size: 14px;
+  font-weight: 500;
+  display: block;
+  margin-bottom: 2px;
+}
+.ks-widget-overview > .ks-footer > .ks-info > .ks-datetime {
+  display: block;
+  color: rgb(133, 133, 133);
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.btn-primary-outline.ks-light {
+  color: rgb(43, 76, 126);
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgb(196, 203, 225);
+  border-image: initial;
+  background: rgb(255, 255, 255);
+}
+.btn.ks-no-text {
+  width: 38px;
+  padding: 0px;
+}
+.btn.ks-no-text > .ks-icon {
+  position: static;
+  margin: 0px;
+}
+
+.btn > .ks-icon {
+  font-size: 11px;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  height: 37px;
+  width: 36px;
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  justify-content: center;
+  margin: 0px 0px 0px 3px;
 }

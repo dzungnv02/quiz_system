@@ -15,6 +15,7 @@ body {
   font-size: 12px;
   position: relative;
   min-height: 100%;
+  background-color: #f8f8f8
 }
 
 a {
@@ -341,12 +342,6 @@ blockquote {
   padding-right: 25px;
   padding-left: 25px;
 }
-.page-container {
-  background-color: #fff;
-}
-
-
-
 
 /*===== Adding vertical spacing to responsive grid =====*/ 
 
