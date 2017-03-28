@@ -1,157 +1,272 @@
-<div style="margin-top: 20px">
-
 <style type="text/css">
+.page-container {
+  z-index: 2;
+  position: relative;
+  height: 100%;
+  background: #f8f8f8;
+  -webkit-transition: transform .7s ease-in-out;
+  -moz-transition: transform .7s ease-in-out;
+  -ms-transition: transform .7s ease-in-out;
+  -o-transition: transform .7s ease-in-out;
+  transition: transform .7s ease-in-out;
+}
+
+.sb {
+  height: 100%;
+  width: 250px;
+  position: fixed;
+  top: 0;
+  z-index: 1;
+  right: 0;
+}
+
+.move-to-left {
+  -webkit-transform: translateX(-250px);
+  -moz-transform: translateX(-250px);
+  -ms-transform: translateX(-250px);
+  -o-transform: translateX(-250px);
+  transform: translateX(-250px);
+}
+.bar {
+  display: block;
+  height: 1px;
+  width: 40px;
+  background-color: #fff;
+  margin: 14px auto;
+}
+
+.button {
+  cursor: pointer;
+  display: inline-block;
+  width: auto;
+  margin: 0 auto;
+  -webkit-transition: all .7s ease;
+  -moz-transition: all .7s ease;
+  -ms-transition: all .7s ease;
+  -o-transition: all .7s ease;
+  transition: all .7s ease;
+}
+
+.nav-right {
+  position: absolute;
+  right: 20px;
+  top: 0;
+}
+
+.nav-right.visible-xs { z-index: 3; }
+
+.hidden-xs { display: none; }
+
+.middle { margin: 0 auto; }
+
+.bar {
+  -webkit-transition: all .7s ease;
+  -moz-transition: all .7s ease;
+  -ms-transition: all .7s ease;
+  -o-transition: all .7s ease;
+  transition: all .7s ease;
+}
+
+.nav-right.visible-xs .active .bar {
+  background-color: #FFF;
+  -webkit-transition: all .7s ease;
+  -moz-transition: all .7s ease;
+  -ms-transition: all .7s ease;
+  -o-transition: all .7s ease;
+  transition: all .7s ease;
+}
+
+.button.active .top {
+  -webkit-transform: translateY(15px) rotateZ(45deg);
+  -moz-transform: translateY(15px) rotateZ(45deg);
+  -ms-transform: translateY(15px) rotateZ(45deg);
+  -o-transform: translateY(15px) rotateZ(45deg);
+  transform: translateY(15px) rotateZ(45deg);
+}
+
+.button.active .bottom {
+  -webkit-transform: translateY(-15px) rotateZ(-45deg);
+  -moz-transform: translateY(-15px) rotateZ(-45deg);
+  -ms-transform: translateY(-15px) rotateZ(-45deg);
+  -o-transform: translateY(-15px) rotateZ(-45deg);
+  transform: translateY(-15px) rotateZ(-45deg);
+}
+
+.button.active .middle { width: 0; }
+
+@media (max-width: 768px) {
+  .group-box > div {
+  	margin: 0;
+  	border: 0
+  }
+}
 
 </style>
+<div class="block group-box col-md-3"></div>
+
+<div class="block col-md-9">
+	<div class="page-header">
+		<div class="page-title">
+			<h3>Hoạt động gần đây</h3>
+		</div>
+	</div>
+  <div class="row exam-list"></div>
+</div>
+
+<script>
+	var gbox = $('.group-box');
+	var glist;
+	var elist = $('.exam-list');
+	var exam_list = [];
+
+	function responsiveFn() {
+    var width = $( window ).width();
+    var height = $( window ).height();
+ 
+    if(width <= 768){
+    	gbox.children().remove();
+    	$('.sb').html(templates.frontend_group_list());
+   	} else {
+   		$('.sb').empty();
+   		gbox.html(templates.frontend_group_list());
+   	}
+   	console.log(glist)
+ 	}
+
+	$(window).on('resize', responsiveFn); 
+
 	
 
-	<div class="block col-md-3">
-		<div class="ks-widget ks-widget-overview">
-		  <div class="ks-body">
-		      <input type="text" id="group-search" class="ks-header form-control autocomplete ui-autocomplete-input" placeholder="Tìm nhóm..." autocomplete="off">
-		      <ul class="ks-items group-list"></ul>
-		  </div>
-		  <div class="ks-footer">
-		      <div class="ks-info">
-		          <span class="ks-name">Tham gia nhóm</span>
-		          <div class="ks-datetime">để luyện tập nhiều hơn</div>
-		      </div>
-		      <button type="button" data-action="join-group"class="btn btn-primary-outline ks-light ks-no-text"><span class="icon-plus ks-icon"></span></button>
-		  </div>
-		</div>
-	</div>
+	$.post('/group-search', {string: ''}, function(res) {
+		glist = gbox.find('.group-list')
+		glist.html(group_search_render(res, true))
+	})
 
-	<div class="block col-md-9">
-		<div class="page-header">
-			<div class="page-title">
-				<h3>Hoạt động gần đây</h3>
-			</div>
-		</div>
-	  <div class="row exam-list"></div>
-	</div>
+	elist.empty().html(frontend_exam_loading_block(3));
+	$.post('/exam-recent-activity', function(res) {
+		setTimeout(function () {
+			elist.empty().html(group_search_render(res.data))
+		}, 1000)
+	})
 
-	<script>
-		var glist = $('.group-list');
-		var elist = $('.exam-list');
-		var exam_list = [];
+	function togglesb() {
+		setTimeout(function () {
+			$('.sb').toggleClass('hidden');
+		}, 1000)
+	  $(".button").toggleClass("active");
+	  $(".page-container").toggleClass("move-to-left");
+	}
 
-		$.post('/group-search', {string: ''}, function(res) {
-			glist.html(group_search_render(res, true))
-		})
+	$(".button").on("click tap", function() {
+	  togglesb();
+	});
 
-		elist.empty().html(frontend_exam_loading_block(3));
-		$.post('/exam-recent-activity', function(res) {
-			setTimeout(function () {
-				elist.empty().html(group_search_render(res.data))
-			}, 1000)
-		})
 
-		$('[data-action]').on('click', function(e) {
-			e.preventDefault();
-			var action = $(this).data('action');
-			if (action === 'join-group') {
-				swal({
-				  title: "Nhóm !",
-				  type: "input",
-				  showCancelButton: true,
-				  closeOnConfirm: false,
-				  confirmButtonText: "Tham gia",
-		  		cancelButtonText: "Hủy",
-				  showLoaderOnConfirm: true,
-				  animation: "slide-from-top",
-				  inputPlaceholder: "Nhập tên nhóm.."
-				},
-				function(inputValue){
-				  if (inputValue === false) return false;
-				  
-				  if (inputValue === "") {
-				    swal.showInputError("Tên nhóm không được bỏ trống!");
-				    return false
-				  }
-				  $.post('/manager/group-join', {name: inputValue}, function(res) {
-				  	if(res.ok) {
-				  		swal.showInputSuccess('Yêu cầu tham gia nhóm '+inputValue+' đã được gửi');
-				  	} else {
-				  		swal.showInputError(res.error);
-				    	return false
-				  	}
-				  })
-				})
-			};
-			if (action === 'users-group') {
-				$.post('/manager/group-users', {id: $(this).data('group')}, function(res) {
+	$('[data-action]').on('click', function(e) {
+		e.preventDefault();
+		var action = $(this).data('action');
+		if (action === 'join-group') {
+			swal({
+			  title: "Nhóm !",
+			  type: "input",
+			  showCancelButton: true,
+			  closeOnConfirm: false,
+			  confirmButtonText: "Tham gia",
+	  		cancelButtonText: "Hủy",
+			  showLoaderOnConfirm: true,
+			  animation: "slide-from-top",
+			  inputPlaceholder: "Nhập tên nhóm.."
+			},
+			function(inputValue){
+			  if (inputValue === false) return false;
+			  
+			  if (inputValue === "") {
+			    swal.showInputError("Tên nhóm không được bỏ trống!");
+			    return false
+			  }
+			  $.post('/manager/group-join', {name: inputValue}, function(res) {
 			  	if(res.ok) {
-			  		swal("Thành công!", "Nhóm " + inputValue+" đã được tạo", "success");
+			  		swal.showInputSuccess('Yêu cầu tham gia nhóm '+inputValue+' đã được gửi');
 			  	} else {
+			  		swal.showInputError(res.error);
 			    	return false
 			  	}
 			  })
-			}
-		});
-
-		$('#group-search').on('change', function(e) {
-			glist.empty();
-			var step = 5;
-			var data = {
-				string: $(this).val().trim()
-			}
-			if(step) data.step = step
-			else step = 0
-			$.post('/group-search', data, function(res) {
-				glist.html(group_search_render(res, true))
 			})
-		});
-
-		var group_search_render = function(res, group_only) {
-			var html = '';
-			for (var i = 0; i < res.length; i++) {
-				if (group_only) {
-					exam_list[res[i]._id] = res[i].exams;
-					html += templates.group_list(res[i])
-				} else {
-					html += templates.exam_list(res[i]);
-				}
-			}
-			return html
 		};
-
-		glist.on('click', '[data-action="group-view-exam"]', function() {
-			var that = $(this);
-			var group = that.data('group');
-			elist.parent().find('.page-title > h3').html(that.text());
-			elist.empty().html(frontend_exam_loading_block(3));
-			$.post('/group-view-exam', {group: group, exams: exam_list[group]}, function(res) {
-				setTimeout(function () {
-					elist.empty().append(group_search_render(res))
-				}, 1000)
-			})
-		});
-
-		elist.on('click', '[data-action="get-histories"]', function() {
-			var that = $(this);
-			var panel = $('#histories'+that.data('index'));
-			panel.html(templates.frontend_exam_chart());
-			$.post('/get-histories', {id: that.data('exam')}, function(res) {
+		if (action === 'users-group') {
+			$.post('/manager/group-users', {id: $(this).data('group')}, function(res) {
 		  	if(res.ok) {
-		  		if (res.data.try_number != 0) {
-		  			var chart_data = {
-							score: [],
-							label: []
-						};
-						for (var i = 0; i < res.data.scores.length; i++) {
-							chart_data.score.push([i, Number(res.data.scores[i])] );
-							chart_data.label.push(res.data.scores[i])
-						}
-						var dataset = { data: chart_data.score, points: { show: true }, showLabels: true, labels: chart_data.label, labelPlacement: "above", canvasRender: true, cColor: "#8bc34a" };
-			  		var chart = panel.find('.graph');
-						var analytics_div = panel.find('.analytics-number');
-						$.plot(chart, [dataset], plot_options);
-						analytics_div.html('<p>'+res.data.avg_score+'</p><p>'+res.data.try_number+'</p><p>'+msToTime(res.data.avg_time_finish)+'</p><p>'+moment(res.data.last_try).format("DD/MM/YYYY")+'</p>')
-		  		} else {
-		  			panel.html('<p class="text-center text-muted">Không có thống kê</p')
-		  		}
-		  	} else return false
+		  		swal("Thành công!", "Nhóm " + inputValue+" đã được tạo", "success");
+		  	} else {
+		    	return false
+		  	}
 		  })
+		}
+	});
+
+	gbox.on('change', '#group-search', function(e) {
+		glist.empty();
+		var step = 5;
+		var data = {
+			string: $(this).val().trim()
+		}
+		if(step) data.step = step
+		else step = 0
+		$.post('/group-search', data, function(res) {
+			glist.html(group_search_render(res, true))
 		})
-	</script>
-</div>
+	});
+
+	var group_search_render = function(res, group_only) {
+		var html = '';
+		for (var i = 0; i < res.length; i++) {
+			if (group_only) {
+				exam_list[res[i]._id] = res[i].exams;
+				html += templates.frontend_group_list_item(res[i])
+			} else {
+				html += templates.exam_list(res[i]);
+			}
+		}
+		return html
+	};
+
+	gbox.on('click tab', '[data-action="group-view-exam"]', function() {
+		var that = $(this);
+		var group = that.data('group');
+		elist.parent().find('.page-title > h3').html(that.text());
+		elist.empty().html(frontend_exam_loading_block(3));
+		$.post('/group-view-exam', {group: group, exams: exam_list[group]}, function(res) {
+			setTimeout(function () {
+				elist.empty().append(group_search_render(res))
+			}, 1000)
+		})
+	});
+
+	elist.on('click', '[data-action="get-histories"]', function() {
+		var that = $(this);
+		var panel = $('#histories'+that.data('index'));
+		panel.html(templates.frontend_exam_chart());
+		$.post('/get-histories', {id: that.data('exam')}, function(res) {
+	  	if(res.ok) {
+	  		if (res.data.try_number != 0) {
+	  			var chart_data = {
+						score: [],
+						label: []
+					};
+					for (var i = 0; i < res.data.scores.length; i++) {
+						chart_data.score.push([i, Number(res.data.scores[i])] );
+						chart_data.label.push(res.data.scores[i])
+					}
+					var dataset = { data: chart_data.score, points: { show: true }, showLabels: true, labels: chart_data.label, labelPlacement: "above", canvasRender: true, cColor: "#8bc34a" };
+		  		var chart = panel.find('.graph');
+					var analytics_div = panel.find('.analytics-number');
+					$.plot(chart, [dataset], plot_options);
+					analytics_div.html('<p>'+res.data.avg_score+'</p><p>'+res.data.try_number+'</p><p>'+msToTime(res.data.avg_time_finish)+'</p><p>'+moment(res.data.last_try).format("DD/MM/YYYY")+'</p>')
+	  		} else {
+	  			panel.html('<p class="text-center text-muted">Không có thống kê</p')
+	  		}
+	  	} else return false
+	  })
+	})
+</script>

@@ -46,6 +46,8 @@ var answer = require(config.app_path+'/answer/index.js');
 
 var tag = require(config.app_path+'/tag/index.js');
 
+var library = require(config.app_path+'/library/index.js');
+
 var auth = {
 	is_authenticated: user.login.isAuthenticated,
 	is_admin: user.login.isAdmin,
@@ -67,6 +69,8 @@ database.connect_to_server(function(err) {
 	answer.route(app, auth);
 
 	tag.route(app, auth);
+
+	library.route(app, auth);
 
 	var server = app.listen(3000, function () {
 		let port = server.address().port;

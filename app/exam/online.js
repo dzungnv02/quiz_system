@@ -53,6 +53,12 @@ module.exports = {
     let log = data.log, user = data.user;
     _collection('exam_online').update({_id: id}, {$set: {['users.'+user+'.logs.'+log]: data.logs}}, callback)
   },
+  get_exam: function(link, _callback) {
+    _collection('exam_online').findOne({_id: link}, function(err, doc) {
+      if (err) return callback(err);
+      callback(null, {users: doc.users, exam: doc.exam})
+    })
+  },
   get_questions: function(link, _callback) {
     async.waterfall([
       function(callback) {
@@ -62,7 +68,7 @@ module.exports = {
         })
       },
       function(data, callback) {
-        func.find_by_id(_collection('exam_online'), data.exam, function(err, exam) {
+        func.find_by_id(_collection('exam'), data.exam, function(err, exam) {
           if (err) return callback(err);
           data.exam = exam;
           callback(null, data)

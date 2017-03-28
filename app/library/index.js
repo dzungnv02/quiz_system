@@ -38,7 +38,7 @@ module.exports = {
 				  })
 				}
 		});
-		app.get('/library', auth.is_creator, function(req, res) {
+		app.get('/manager/library', auth.is_creator, function(req, res) {
 			res.render('layout', {
 				page: 'main',
 				body_class: '',

@@ -163,9 +163,9 @@ module.exports = {
 		});
 		app.get('/test/:link', auth.is_authenticated, function(req, res) {
 			let link = req.params.link;
+			let user = req.user;
 			if (link) {
-				let user = req.user;
-				if(user) exam_online.get_questions(link, function(data) {
+				exam_online.get_questions(link, function(data) {
 					user_activity.update_exam(user._id, data.exam._id);
 					exam_online.update_user(link, {
 						user: user._id,
@@ -202,6 +202,34 @@ module.exports = {
 					res.send({ok: true, data: result})
 				})
 			}
-		})
+		});
+
+
+		// CREATOR REQUESTS
+
+		app.post('/exam-list', auth.is_authenticated, function (req, res) {
+			let user = req.user;
+			async.parallel([
+				function(callback) {
+					func.find_by_creator(_collection('term'), user._id, callback)
+				},
+				function(callback) {
+					func.find_by_creator(_collection('exam'), user._id, function(err, exams) {
+						if (exams.length > 0) {
+							async.eachSeries(exams, function(exam, next) {
+								func.find_by_id(_collection('user_group'), exam.groups, function(err, groups) {
+									exam.groups = func.return_data_with_info(groups, ['_id','name']);
+									next()
+								})
+							}, function(err) {
+							  callback(err, exams)
+							})
+						} else res.send({ ok:false, err: errors.not_found})
+					})
+				}
+			], function(err, data){
+				res.send({ ok:true, data: func.return_data_with_info(data[1], ['_id','name','link','questions','groups'])})
+			})
+		});
 	}
 }

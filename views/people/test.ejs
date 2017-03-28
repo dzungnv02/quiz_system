@@ -1,8 +1,13 @@
 <script type="text/javascript" src="/js/plugins/math/MathJax.js?config=TeX-AMS_CHTML""></script>
 <link href="/css/test.css" rel="stylesheet" type="text/css">
+
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.css"/>
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.min.js"></script>
+
 <div class="exam-header">
 	<div class="container">
 		<button data-action="finish" class="btn btn-success btn-flat">Nộp bài</button>
+		<div class="exam-question-count"> 1/<%= questions.length %></div>
 		<div class="exam-time pull-right" id="clockdiv">
 			<span class="hours"></span>
 			<span class="minutes"></span>
@@ -13,9 +18,10 @@
 
 <div class="exam-content container">
 	<div class="panel-body">
-		<h4><%= exam.info %></h4>
+		<p class="text-bold"><%= exam.info %></p>
+		<div id="test">
 		<% for(var i = 0; i < questions.length; i++) { %>
-			<div class="exam-question" data-question="<%= questions[i]['_id'] %>">
+			<div data-slidr="<%= i %>" class="exam-question" data-question="<%= questions[i]['_id'] %>">
 				<% if(questions[i]['info'] != '') { %>
 					<h5><%= questions[i]['info'] %></h5>
 				<% } %>
@@ -29,11 +35,23 @@
 				<% }%>
 			</div>
 		<% } %>
+		</div>
 	</div>
 </div>
 
 <script>
+
 	$(document).ready(function() {
+		var test = $('#test');
+		test.slick({
+			dots: true,
+  		infinite: false,
+  		arrows: false,
+  		adaptiveHeight: true
+		}).on('afterChange', function(event, slick, currentSlide){
+		  $('.exam-question-count').text((currentSlide + 1) +'/'+(slick.slideCount));
+		});
+
 		var time_start = Date.now();
 		var time_limit = <%= exam.time %>;
 		var questions_number = <%= questions.length %>;

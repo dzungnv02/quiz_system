@@ -12,12 +12,25 @@ var exam_id = null,
 		remove_question_buton: '<button data-action="remove-question" class="btn btn-default btn-xs pull-right">Xóa bỏ</button>',
 		create_or_load_question: '<div class="col-sm-8 col-sm-offset-4"> <button data-action="create-exam" class="btn btn-primary btn-labeled"> <span class="btn-label icon fa fa-plus"></span>Tạo mới </button> <span style="margin: 0 10px"> hoặc </span> <button data-action="search-exam" class="btn btn-primary btn-outline" title="Chọn từ ngân hàng" data-toggle="modal" data-target="#load-exam">+ Chèn bài kiểm tra</button> </div>',
 		question_form: '<div class="col-sm-1 upper"><p>Câu hỏi</p><ul id="questions"></ul> <div style="margin:30px -11px 0 0"> <button data-action="add-question" class="btn btn-default btn-outline" style="padding:5px">+</button> <span style="font-size: 9px;margin: 0 5px"> hoặc </span> <a href="#" title="Chọn từ ngân hàng câu hỏi" data-action="search-question" data-toggle="modal" data-target="#load-question">Chọn</a></div></div><div class="col-sm-9 lower"></div><div class="col-sm-2"><p>Tags</p> <select multiple="multiple" id="exam_tags_input"></select> <div class="checkbox" style="margin:5px 0"> <label> <input type="checkbox" id="exam_shuffle_input" class="px" checked=""> <span class="lbl">Trộn câu hỏi</span> </label> </div> <div class="checkbox" style="margin:5px 0"> <label> <input type="checkbox" id="exam_score_input" class="px"> <span class="lbl">Cho xem điểm</span> </label> </div> <div class="checkbox" style="margin:5px 0"> <label> <input type="checkbox" id="exam_hint_input" class="px"> <span class="lbl">Hiện đáp án đúng</span> </label> </div> <div class="checkbox" style="margin:5px 0"> <label> <input type="checkbox" id="exam_repeat_input" class="px"> <span class="lbl">Làm nhiều lần</span> </label> </div> <textarea rows="3" class="elastic form-control" id="exam_info_input" placeholder="Mô tả.."></textarea></div>',
-		group_list: function(data) {
-			var length = (data.exams.length < 20) ? (data.exams.length > 0) ? data.exams.length : '' : '20++'
-			return '<li class="ks-item"> <span class="icon-puzzle2 ks-icon"></span> <span class="ks-text" data-group="'+data._id+'" data-action="group-view-exam">'+data.name+'</span></li>'
-		},
 		exam_list: function(data) {
 			return '<div class="project-item card"> <div class="project-item-title"> <div class="title"> '+data.name+' <ul class="headline-info"> <li>'+data.questions.length+' câu</li> <li>thời gian '+data.time / 60+' phút</li> </ul> </div> <div class="action"> <a href="/test/'+data.link+'" class="btn btn-link btn-icon btn-xs" target="_blank"><i class="icon-marker"></i></a> <a class="btn btn-link btn-icon btn-xs" data-index="'+data.link+'" data-exam="'+data.link+'" data-action="get-histories" data-toggle="collapse" href="#histories'+data.link+'"><i class="icon-tree3"></i></a> </div> </div> <div class="panel-collapse collapse" id="histories'+data.link+'"></div> </div>'
+		},
+		creator_exam_list: function(data) {
+			var share_state = '', groups = '';
+			if(data.link) share_state =' <span class="status-indicator online"></span>';
+			if(data.groups) {
+				for(var i = 0; i < data.groups.length; i++) {
+					groups += '<span data-group="'+data.groups[i]._id+'" class="text-semibold text-info">'+data.groups[i].name+'</span>,'
+				}
+			}
+			return '<div class="project-item card" data-exam="'+data._id+'"> <div class="project-item-title"> <span class="title">'+data.name+share_state+' </span> <div class="action"> <i class="icon-wrench2 text-muted dropdown-toggle" data-toggle="dropdown"></i> <ul class="dropdown-menu icons-right dropdown-menu-right" data-exam="'+data._id+'"> <li><a href="#" data-action="edit-exam">Chỉnh sửa</a></li> <li><a href="#" data-link="'+data.link+'" data-action="share-exam">Chia sẻ</a></li> <li><a href="#" data-action="">Thống kê</a></li> <li class="divider"></li> <li><a href="#" data-action="delete-exam">Xóa</a></li> </ul> </div> </div> <ul class="headline-info"> <li>'+data.questions.length+' câu hỏi</li> <li>nhóm '+groups+' <span data-action="add-group" data-link="'+data.link+'" class="text-success"> + thêm nhóm</span> </li> </ul> </div>'
+		},
+		frontend_group_list: function() {
+			return '<div class="es-box"> <div class="es-body"> <input type="text" id="group-search" class="es-header form-control autocomplete ui-autocomplete-input" placeholder="Tìm nhóm..." autocomplete="off"> <ul class="es-items group-list"></ul> </div> <div class="es-footer"> <div class="es-info"> <span class="es-name">Tham gia nhóm</span> <div class="es-datetime">để luyện tập nhiều hơn</div> </div> <button type="button" data-action="join-group" class="btn btn-primary-outline es-light es-no-text"><span class="icon-plus es-icon"></span></button> </div> </div>'
+		},
+		frontend_group_list_item: function(data) {
+			var length = (data.exams.length < 20) ? (data.exams.length > 0) ? data.exams.length : '' : '20++'
+			return '<li class="es-item" data-group="'+data._id+'" data-action="group-view-exam"> <span class="icon-puzzle2 es-icon"></span> <span class="es-text">'+data.name+'</span></li>'
 		},
 		frontend_exam_chart: function(data){
 			return '<div class="block"> <div class="row"> <div class="col-md-6"> <div class="graph"></div> </div> <div class="col-md-6"> <div class="container-fluid score-board"> <div> <p>Điểm số trung bình</p> <p>Số lần làm</p> <p>Thời gian làm trung bình</p> <p>Ngày làm gần nhất</p> </div> <div class="analytics-number text-right"></div> </div> </div> </div> </div>'},
