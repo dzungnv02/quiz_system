@@ -4,6 +4,7 @@ const func = common.func;
 const async = common.modules.async;
 const errors = common.errors;
 const routes = common.routes;
+const exam_online = require('./online.js');
 
 var db;
 var _collection = function(name) {
@@ -61,7 +62,7 @@ var exam_share = function(data, callback) {
 			if (data.group != undefined || data.group != null) {
 				exam_add_group(exam, data.group, callback)
 			} else {
-				exam_online_generate(exam._id, data, function(link) {
+				exam_online.generate(exam._id, data, function(link) {
 					_collection('exam').update({_id: objectId(exam._id)}, {$set: {link: link}}, function() {
 						exam.link = link;
 						exam.start_share = true;
@@ -87,23 +88,23 @@ var exam_cancel_share = function(data, callback) {
 };
 
 module.exports = {
-	do_create: function(user, _callback) {
+	do_create: function(data, user, callback) {
 		let insert = {
-			name: req.body.title,
-			time: req.body.time,
+			name: data.title,
+			time: data.time,
 			questions: [],
-			shuffle: req.body.shuffle,
+			shuffle: data.shuffle,
 			done: false,
 			tags: [],
 			groups: [],
 			info: '',
 			link: '',
-			show_score: false,
+			show_score: true,
 			show_hint: false,
-			do_again: false,
+			do_again: true,
 			creator: objectId(user._id),
 		};
-		func.insert_one(_collection('exam'), insert, _callback)
+		func.insert_one(_collection('exam'), insert, callback)
 	},
 	do_update: function(data, _callback) {
 		if (data.id) {
@@ -123,7 +124,7 @@ module.exports = {
 	},
 	do_remove: function(data, _callback) {
 		if (data.id) {
-			_collection('exam').remove({_id: objectId(req.body.id)}, _callback)
+			_collection('exam').remove({_id: objectId(data.id)}, _callback)
 		} else _callback(errors.not_enough_info)
 	},
 	do_search: function(data, _callback) {

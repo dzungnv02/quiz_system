@@ -95,7 +95,7 @@
 .button.active .middle { width: 0; }
 
 @media (max-width: 768px) {
-  .group-box > div {
+  .sb > .es-box {
   	margin: 0;
   	border: 0
   }
@@ -130,22 +130,21 @@
    		$('.sb').empty();
    		gbox.html(templates.frontend_group_list());
    	}
-   	console.log(glist)
  	}
 
+ 	gbox.html(templates.frontend_group_list());
 	$(window).on('resize', responsiveFn); 
 
-	
 
 	$.post('/group-search', {string: ''}, function(res) {
 		glist = gbox.find('.group-list')
 		glist.html(group_search_render(res, true))
 	})
 
-	elist.empty().html(frontend_exam_loading_block(3));
+	elist.html(frontend_exam_loading_block(3));
 	$.post('/exam-recent-activity', function(res) {
 		setTimeout(function () {
-			elist.empty().html(group_search_render(res.data))
+			elist.html(group_search_render(res.data))
 		}, 1000)
 	})
 
@@ -231,6 +230,7 @@
 		return html
 	};
 
+
 	gbox.on('click tab', '[data-action="group-view-exam"]', function() {
 		var that = $(this);
 		var group = that.data('group');
@@ -261,6 +261,7 @@
 					var dataset = { data: chart_data.score, points: { show: true }, showLabels: true, labels: chart_data.label, labelPlacement: "above", canvasRender: true, cColor: "#8bc34a" };
 		  		var chart = panel.find('.graph');
 					var analytics_div = panel.find('.analytics-number');
+					console.log(dataset)
 					$.plot(chart, [dataset], plot_options);
 					analytics_div.html('<p>'+res.data.avg_score+'</p><p>'+res.data.try_number+'</p><p>'+msToTime(res.data.avg_time_finish)+'</p><p>'+moment(res.data.last_try).format("DD/MM/YYYY")+'</p>')
 	  		} else {

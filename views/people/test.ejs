@@ -1,8 +1,9 @@
 <script type="text/javascript" src="/js/plugins/math/MathJax.js?config=TeX-AMS_CHTML""></script>
 <link href="/css/test.css" rel="stylesheet" type="text/css">
 
-<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.css"/>
-<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/js/plugins/slick/slick.css"/>
+<link rel="stylesheet" type="text/css" href="/js/plugins/slick/slick-theme.css"/>
+<script type="text/javascript" src="/js/plugins/slick/slick.min.js"></script>
 
 <div class="exam-header">
 	<div class="container">
@@ -42,15 +43,24 @@
 <script>
 
 	$(document).ready(function() {
-		var test = $('#test');
-		test.slick({
-			dots: true,
-  		infinite: false,
-  		arrows: false,
-  		adaptiveHeight: true
-		}).on('afterChange', function(event, slick, currentSlide){
-		  $('.exam-question-count').text((currentSlide + 1) +'/'+(slick.slideCount));
-		});
+
+		function responsiveFn() {
+	    var width = $( window ).width();
+	    var height = $( window ).height();
+	 
+	    if(width <= 768) {
+	    	$('#test').slick({
+					dots: true,
+		  		infinite: false,
+		  		arrows: false,
+		  		adaptiveHeight: true
+				}).on('afterChange', function(event, slick, currentSlide){
+				  $('.exam-question-count').text((currentSlide + 1) +'/'+(slick.slideCount));
+				});
+	   	}
+	 	}
+
+		$(window).on('resize', responsiveFn);
 
 		var time_start = Date.now();
 		var time_limit = <%= exam.time %>;
@@ -100,6 +110,7 @@
 				  	text: "bấm nút OK để xem điểm.",
 				  	type: "warning",
 				  	showCancelButton: false,
+				  	showLoaderOnConfirm: true,
 					},
 					function(isConfirm){
 				  	if (isConfirm) finish_test();
@@ -128,6 +139,7 @@
 		  	confirmButtonText: "Nộp bài",
 		  	cancelButtonText: "Không, chưa làm xong",
 		  	closeOnConfirm: false,
+		  	showLoaderOnConfirm: true,
 		  	closeOnCancel: true
 			},
 			function(isConfirm){
@@ -198,8 +210,9 @@
 		  	cancelButtonText: "Xem đáp án",
 		  	closeOnConfirm: true,
 		  	closeOnCancel: true
-			},function() {
-
+			},function(isConfirm) {
+				if (isConfirm) location.reload()
+				else result_display(res.cheatsheet);
 			})
 		};
 
@@ -220,7 +233,23 @@
 			return [].concat.apply([], a)
 		};
 
-		function show_result_display(question, index) {
+		function result_display(sheet) {
+			var q = $('.exam-question');
+			var obj;
+			for (var i = 0; i < q.length; i++) {
+				q.find('input').prop('disabled', true);
+				obj = $(q[i]);
+				if(Array.isArray(sheet[i])) {
+					for (var j = 0; j < sheet[i].length; j++) highlight_result(obj, sheet[i][j]);
+				} else highlight_result(obj, sheet[i]);
+			}
+			$('button[data-action="finish"]').text('Làm lại').data('action','').on('click', function(e) {
+				e.preventDefault();
+				location.reload();
+			})
+		}
+
+		function highlight_result(question, index) {
 			var obj = question.find('label:eq('+index+')');
 			var tmp = obj.attr('class').replace('primary','success');
 			obj.attr('class', tmp);
@@ -237,18 +266,7 @@
 		  	confirmButtonText: "Xem đáp án",
 		  	closeOnConfirm: true,
 			},function(isConfirm) {
-				if (isConfirm) {
-					var a = res.cheatsheet;
-					var q = $('.exam-question');
-					var obj;
-					for (var i = 0; i < q.length; i++) {
-						q.find('input').prop('disabled', true);
-						obj = $(q[i]);
-						if(Array.isArray(a[i])) {
-							for (var j = 0; j < a[i].length; j++) show_result_display(obj, a[i][j]);
-						} else show_result_display(obj, a[i]);
-					}
-				}
+				if (isConfirm) result_display(res.cheatsheet);
 			})
 		};
 	})

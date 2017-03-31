@@ -16,5 +16,8 @@ module.exports = {
   },
   update_exam: function(id, exam, callback) {
     _collection('user_activity').update({_id: objectId(id)}, {$push: {exam: exam}}, {upsert: true}, callback);
+  },
+  did_a_exam: function(id, exam, callback) {
+  	_collection('user_activity').findOne({_id: objectId(id), exam: exam}, callback);
   }
 };

@@ -142,14 +142,12 @@ Functions = {
 			let checker;
 			for (let i = 0; i < question.answers.length; i++) {
 				if (question.answers[i].is_correct) checker = i;
-				if (i == data.answer) {
-					if (data.correct != undefined && data.correct) {
-						question.answers[i].is_correct = true;
-						question.answers[checker].is_correct = false
-					}
-					if (data.text != undefined) question.answers[i].text = data.text;
-				}
 			}
+			if (data.correct != undefined && data.correct && data.answer < question.answers.length) {
+				question.answers[data.answer].is_correct = true;
+				question.answers[checker].is_correct = false
+			}
+			if (data.text != undefined) question.answers[data.answer].text = data.text;
 		}
 
 		if (question.form == 'multi-answer') {

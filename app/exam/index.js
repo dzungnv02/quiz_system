@@ -18,7 +18,7 @@ module.exports = {
 			res.render('layout', data)
     });
 		app.post(route.create, auth.is_authenticated, function (req, res) {
-      _exam.do_create(req.user, function(err, obj){
+      _exam.do_create(req.body, req.user, function(err, obj){
 				if(err) return res.send({ok: false, error: err});
 				res.send({ ok:true, exam: obj.insertedId})
 			})

@@ -16,6 +16,7 @@ var objectId = function(id) {
 
 var update_answers = function(target, data, callback) {
   _collection('question').findOne(target, function(err, question) {
+    console.log(question)
     let q = func.answer_reformat(question, data);
     _collection('question').update(target, {$set: q}, callback)
   })

@@ -38,6 +38,8 @@ var user = {
 	group: require(config.app_path+'/group/index.js')
 }
 
+var term = require(config.app_path+'/term/index.js');
+
 var exam = require(config.app_path+'/exam/index.js');
 
 var question = require(config.app_path+'/question/index.js');
@@ -61,6 +63,8 @@ database.connect_to_server(function(err) {
 	user.index.route(app, auth);
 	user.group.route(app, auth);
 	user.request.route(app, auth);
+
+	term.route(app, auth);
 
 	exam.route(app, auth);
 

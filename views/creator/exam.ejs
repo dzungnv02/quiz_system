@@ -10,7 +10,6 @@
 			</div>
 		</div>
 		<div class="col-sm-offset-2 col-sm-2">
-			<button data-action="exam-preview" class="btn btn-primary btn-flat" style="width: 100%">Xem trước</button>
 		</div>
 	</div>
 		
@@ -69,6 +68,16 @@
 	</div>
 </div>
 
+<div class="exam-preview modal fade" tabindex="-1" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-body with-padding">
+				
+			</div>
+		</div>
+	</div>
+</div>
+
 <script type="text/javascript">
 	(function() {
 		var selector = {
@@ -77,7 +86,11 @@
 			question_search_modal: $('#load-question'),
 		};
 
-		var load_exists_exam = function(id) {
+		<% if(load_exam) { %>
+			load_exists_exam('<%= load_exam %>')
+		<% } %>
+
+		function load_exists_exam(id) {
 			$.post('/manager/exam-load',{id: id},function(res) {
 				if (res) {
 					var data = res.q;
@@ -119,9 +132,7 @@
 			})
 		};
 
-		<% if(load_exam) { %>
-			load_exists_exam('<%= load_exam %>')
-		<% } %>
+		
 
 		$('#exam_title_input').val('Bài kiểm tra '+ new Date().toJSON().slice(0,19).replace(/:|T/g,'-'));
 		$('[data-action="create-exam"]').on('click', function() {
@@ -295,7 +306,7 @@
 		});
 
 		$('[data-action="exam-preview"]').on('click', function() {
-			console.log('preview');
+			$('.exam-preview').modal('show');
 		});
 
 		var question_click = function(e) {
@@ -310,6 +321,7 @@
 				set_form_target(form_container.find('form.active'));
 				div.children().addClass('hidden');
 				form_container.removeClass('hidden');
+				autosize.update(form_container.find('.elastic'));
 			}
 			return false;
 		};

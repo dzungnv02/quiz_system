@@ -36,10 +36,11 @@ var user_exam_histories = function(exam, user, callback) {
 						if (logs[i].done) {
 							data.avg_score += Number(logs[i].score);
 							data.avg_time_finish += logs[i].finish_time - logs[i].date;
-							data.scores.push(logs[i].score);
+							if(data.scores.length <= 10) data.scores.push(logs[i].score);
 							finished++
 						}
 					}
+					data.scores.reverse();
 					data.try_number = logs_len;
 					data.last_try = logs[logs_len - 1].date;
 					data.avg_time_finish = data.avg_time_finish / finished;
@@ -48,8 +49,36 @@ var user_exam_histories = function(exam, user, callback) {
 		}
 		callback(data)
 	})
-}
+};
 
+var get_questions_in_exam = function(exam, user, users, callback) {
+	exam_online.get_questions(exam, function(err, data) {
+		user_activity.update_exam(user._id, exam._id.toString());
+		exam_online.update_user(exam.link, {
+			user: user._id,
+			users: users,
+			questions: data.questions,
+			answers: data.answers
+		})
+		callback(data.questions)
+	})
+}
+var render_test = function(exam, res) {
+	res.render('layout', {
+		page: 'people/test',
+		title: exam.name,
+		body_class: '',
+		id: exam.link,
+		exam: {
+			info: exam.info,
+			time: exam.time,
+			score: exam.show_score,
+			hint: exam.show_hint,
+			repeat: exam.do_again,
+		},
+		questions: exam.questions,
+	})
+}
 module.exports = {
 	route: function(app, auth) {
 		app.post('/load-more', auth.is_authenticated, function (req, res) {
@@ -95,9 +124,11 @@ module.exports = {
 				if (err) return res.send({ok:false, err: err});
 				if (doc) {
 					let tmp = doc.exam;
-					if(tmp.length > 6) tmp = tmp.slice(-5);
+					let arr = tmp.filter(function(elem, pos,arr) {
+				    return arr.indexOf(elem) == pos
+				  }).reverse();
 					let exams = [];
-					async.eachSeries(tmp, function(elem, next) {
+					async.eachSeries(arr, function(elem, next) {
 						func.find_by_id(db.collection('exam'), elem, function(err, exam) {
 							exams.push(exam);
 							next()
@@ -161,35 +192,28 @@ module.exports = {
 				})
 			} else res.send({ ok:false, err: errors.not_enough_info})
 		});
+		
 		app.get('/test/:link', auth.is_authenticated, function(req, res) {
 			let link = req.params.link;
 			let user = req.user;
 			if (link) {
-				exam_online.get_questions(link, function(data) {
-					user_activity.update_exam(user._id, data.exam._id);
-					exam_online.update_user(link, {
-						user: user._id,
-						users: data.users,
-						questions: data.qa.questions,
-						answers: data.qa.answers
-					}, function(err, obj) {
-						if (err) return res.send({ok:false, error: err});
-						let exam = {
-							info: data.exam.info,
-							time: data.exam.time,
-							score: data.exam.show_score,
-							hint: data.exam.show_hint,
-							repeat: data.exam.do_again,
-						}
-						res.render('layout', {
-							page: 'people/test',
-							title: data.exam.name,
-							body_class: '',
-							id: data.exam.link,
-							exam: exam,
-							questions: data.qa.questions,
+				exam_online.get_exam_and_users(link, function(err, data) {
+					let exam = data.exam, users = data.users;
+					if(exam.do_again) {
+						get_questions_in_exam(exam, user, users, function(questions) {
+							exam.questions = questions;
+							render_test(exam, res)
 						})
-					})
+					} else {
+						user_activity.did_a_exam(user._id, exam._id.toString(), function(err, data) {
+							if(!data) {
+								get_questions_in_exam(exam, user, users, function(questions) {
+									exam.questions = questions;
+									render_test(exam, res)
+								})
+							} else res.send({ok:false, error: errors.permission_denied})
+						})
+					}
 				})
 			} else res.send({ok:false, error: errors.not_enough_info})
 		});

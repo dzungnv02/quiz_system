@@ -8,6 +8,18 @@ const route = {
 			title: 'Quản lý',
 			path: croot
 		},
+		term: {
+			index: {
+				title: 'Kỳ thi',
+				path: croot+'/term'
+			},
+			create: croot+'/term-create',
+			update: croot+'/term-update',
+			remove: croot+'/term-delete',
+			search: croot+'/term-search',
+			load: croot+'/term-load',
+			share: croot+'/term-share'
+		},
 		exam: {
 			index: {
 				title: 'Bài kiểm tra',
@@ -35,7 +47,7 @@ const route = {
 		},
 		group: {
 			index: {
-				title: 'Group',
+				title: 'Nhóm',
 				path: croot+'/group'
 			},
 			create: croot+'/group-create',
@@ -47,6 +59,9 @@ const route = {
 		},
 		tag: {
 			list: croot+'/tags-list'
+		},
+		library: {
+			list: croot+'/library'
 		}
 	},
 	people: {
