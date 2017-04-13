@@ -1,0 +1,309 @@
+<link rel="stylesheet" href="/js/plugins/daterangepicker/daterangepicker.css">
+<script type="text/javascript" src="/js/plugins/daterangepicker/moment.min.js"></script>
+<script type="text/javascript" src="/js/plugins/daterangepicker/daterangepicker.js"></script>
+<script type="text/javascript" src="/js/plugins/forms/validate.min.js"></script>
+<link rel="stylesheet" href="/js/plugins/jquery.wizard/css/wizard.min.css">
+<script src="/js/plugins/jquery.wizard/jquery-wizard.min.js"></script>
+
+<style type="text/css">
+
+</style>
+
+<div class="es-body es-form-steps-progress-page" id="term-form">
+  <div class="es-steps-progress">
+    <div class="es-header">
+      <h3>Tạo kỳ thi</h3>
+      <div class="es-description">Làm bài thi trực tuyến</div>
+    </div>
+    <div class="es-body">
+      <div class="progress">
+        <div class="progress-bar progress-bar" style="width: 25%"></div>
+      </div>
+      <div class="es-step-items">
+        <a href="#" class="es-step-item es-completed">Thông tin cơ bản</a>
+        <a href="#" class="es-step-item">Đơn vị tổ chức</a>
+        <a href="#" class="es-step-item">Nội dung thi</a>
+        <a href="#" class="es-step-item">Hoàn tất</a>
+      </div>
+    </div>
+  </div>
+  <div class="es-wrapper">
+    <div class="list-group es-steps" role="tablist">
+      <a href="#" role="tab" data-target="#step1" class="es-list-group-item active">
+        <span class="es-point"><span>1</span></span>
+        <span class="es-text">Thông tin cơ bản</span>
+      </a>
+      <a href="#" role="tab" data-target="#step2" class="es-list-group-item">
+        <span class="es-point"><span>2</span></span>
+        <span class="es-text">Đơn vị tổ chức</span>
+      </a>
+      <a href="#" role="tab" data-target="#step3" class="es-list-group-item">
+        <span class="es-point"><span>3</span></span>
+        <span class="es-text">Nội dung thi</span>
+      </a>
+      <a href="#" role="tab" data-target="#step4" class="es-list-group-item">
+        <span class="es-point"><span>4</span></span>
+        <span class="es-text">Hoàn tất</span>
+      </a>
+    </div>
+    <div class="es-steps-content wizard-content">
+      <div class="wizard-pane active es-steps-wrapper" id="step1" role="tabpanel">
+        <form accept-charset="utf-8" class="es-step">
+          <div class="form-group">
+            <label>Tên kỳ thi</label>
+            <input type="text" class="form-control" name="term_name" placeholder="Nhập tên.." required>
+            <small class="form-text text-muted">VD: kỳ thi học sinh giỏi, thi cuối kỳ...</small>
+          </div>
+          <div class="form-group">
+            <label>Thời gian thi</label>
+            <input type="text" class="form-control" name="term_date" required>
+          </div>
+        </form>
+      </div>
+      <div class="wizard-pane es-steps-wrapper" id="step2" role="tabpanel">
+        <form accept-charset="utf-8" class="es-step">
+          <div class="form-group">
+            <label>Tổ chức</label>
+            <input type="text" class="form-control" name="term_organization" placeholder="Nhập tên..." required>
+            <small class="form-text text-muted">VD: Trường THPT Hà Nội....</small>
+          </div>
+          <div class="form-group">
+            <label>Địa chỉ</label>
+            <input type="text" class="form-control" name="term_organization_address" placeholder="Địa chỉ...">
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" class="form-control" name="term_organization_email" placeholder="Địa chỉ email..">
+          </div>
+        </form>
+      </div>
+      <div class="wizard-pane es-steps-wrapper" id="step3" role="tabpanel">
+        <form accept-charset="utf-8" class="es-step">
+          <div class="form-group">
+            <label>Đối tượng thi</label>
+            <select multiple="multiple" class="term-group" name="term_group" required></select>
+          </div>
+          <div class="form-group">
+            <label>Bài kiểm tra</label>
+            <select multiple="multiple" class="term-exam" name="term_exam" required></select>
+          </div>
+        </form>
+      </div>
+      <div class="wizard-pane es-steps-wrapper" id="step4" role="tabpanel">
+        <button type="button" data-action="term-finish" class="btn btn-success btn-outline">Hoàn thành</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="term-list"></div>
+
+<script>
+
+  var tlist = $('.term-list');
+  tlist.empty().html(frontend_exam_loading_block(3));
+
+  $.post('/term-list', function(res) {
+    setTimeout(function () {
+      tlist.html(creator_term_list_render(res.terms))
+    }, 1000)
+  });
+  
+  var creator_term_list_render = function(data) {
+    var html = '';
+    for (var i = 0; i < data.length; i++) {
+      html += templates.creator_term_list(data[i]);
+    }
+    return html
+  };
+
+(function() {
+  var options = $.extend({}, daterangepicker_options, {
+    startDate: moment(),
+    endDate: moment().subtract(-1, 'months'),
+    minDate: moment(),
+    dateLimit: { days: 60 },
+    timePicker: true,
+    timePickerIncrement: 15,
+    timePicker24Hour: true,
+  });
+  $('input[name="term_date"]').daterangepicker(options);
+
+  var wizard = $('#term-form').wizard({
+    step: ".es-steps > a",
+    templates: {
+      buttons: function() {
+        var options = this.options;
+        return '<div class="wizard-buttons">' +
+          '<a class="btn btn-primary btn-outline pull-right" href="#' + this.id + '" data-wizard="next" role="button">' + options.buttonLabels.next + '</a>' +
+          '</div>';
+      }
+    },
+    buttonLabels: {
+      next: 'Tiếp theo',
+      back: 'Trở lại',
+      finish: 'Hoàn thành'
+    },
+    onInit: function() {
+      this.$progressbar = this.$element.find('.progress-bar')
+        .addClass('progress-bar-striped');
+    },
+    onBeforeShow: function(step) {
+      step.$element.tab('show');
+    },
+    onFinish: function() {
+      this.$progressbar.removeClass('progress-bar-striped').addClass(
+        'progress-bar-success');
+    },
+    onAfterChange: function(prev, step) {
+      var total = this.length();
+      var current = step.index + 1;
+      var percent = (current / total) * 100;
+
+      this.$progressbar.css({
+        width: percent + '%'
+      })
+    },
+  }).data('wizard')
+
+  wizard.get('#step1').setValidator(function() {
+    var that = $(this), that_form = that.find('form');
+    var fv = that_form.validate({
+      rules: {
+        term_name: {
+          required: true
+        },
+        term_date: {
+          required: true
+        },
+
+      },
+      messages: {
+        term_name: {
+          required: "Tên kỳ thi không được bỏ trống",
+        },
+        term_date: {
+          required: "Thời gian thi không được bỏ trống",
+        },
+      }
+    });
+    if (!fv.form()) {
+      return false
+    }
+    return true
+  });
+
+  wizard.get('#step2').setValidator(function() {
+    var that = $(this), that_form = that.find('form');
+    var fv = that_form.validate({
+      rules: {
+        term_organization: {
+          required: true
+        }
+      },
+      messages: {
+        term_organization: {
+          required: "Tên tổ chức không được bỏ trống",
+        },
+      }
+    });
+    if (!fv.form()) {
+      return false
+    }
+    return true
+  });
+
+  wizard.get('#step3').setValidator(function() {
+    var that = $(this), that_form = that.find('form');
+    var fv = that_form.validate({
+      rules: {
+        term_group: {
+          required: true
+        },
+        term_exam: {
+          required: true
+        }
+      },
+      messages: {
+        term_group: {
+          required: "Đối tượng thi không được bỏ trống"
+        },
+        term_exam: {
+          required: "Cần chọn ít nhất 1 bài kiểm tra"
+        }
+      }
+    });
+    if (!fv.form()) {
+      return false
+    }
+    return true
+  });
+
+  $('.term-group').select2({
+    width: '100%',
+    placeholder: 'Thêm nhóm...',
+    tags:true,
+    ajax: {
+      url: "/manager/group-list",
+      dataType: 'json',
+      delay: 250,
+      processResults: function (data, params) {
+        params.page = params.page || 1;
+        data.groups.forEach(function(entry, index) {
+          entry.id = entry._id;
+        });
+        return {
+          results: data.groups,
+          pagination: {
+            more: (params.page * 30) < data.length
+          }
+        };
+      },
+      cache: true
+    },
+    escapeMarkup: function (markup) { return markup },
+    minimumResultsForSearch: Infinity,
+    templateResult: formatRepo,
+    templateSelection: formatRepoSelection
+  });
+
+  $('.term-exam').select2({
+    width: '100%',
+    placeholder: 'Thêm nhóm...',
+    tags:true,
+    ajax: {
+      url: "/manager/exam-list",
+      dataType: 'json',
+      delay: 250,
+      processResults: function (data, params) {
+        params.page = params.page || 1;
+        data.exams.forEach(function(entry, index) {
+          entry.id = entry._id;
+        });
+        return {
+          results: data.exams,
+          pagination: {
+            more: (params.page * 30) < data.length
+          }
+        };
+      },
+      cache: true
+    },
+    escapeMarkup: function (markup) { return markup },
+    minimumResultsForSearch: Infinity,
+    templateResult: formatRepo,
+    templateSelection: formatRepoSelection
+  });
+
+  $('[data-action="term-finish"]').click(function() {
+    var data = $('#term-form form').serialize();
+    update_term(data)
+  });
+
+  var update_term = function(data) {
+    $.post('/manager/term-create', data,function(res) {
+
+    })
+  }
+})()
+</script>

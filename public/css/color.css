@@ -1,0 +1,70 @@
+.user.dropdown {
+	display: flex;
+	justify-content: flex-end;
+	padding-right: 20px
+}
+body {
+  background-color: #fff;
+  font-size: 13px;
+  color: #1B2733
+}
+a {
+  color: #2895F1;
+}
+.sidebar {
+  background-color: #F7F9FA
+}
+.navigation > li > a,
+.navigation > li ul li a {
+	color: #637282
+}
+.navigation > li ul {
+	background-color: #E6E8EB
+}
+#questions > li {
+	background-color: #f0f8ff
+}
+.navigation > li.active > a, .navigation > li.active:hover > a, .navigation > li.active:focus > a {
+	color: #03A9F4;
+  background-color: transparent; 
+  border-color: transparent; 
+  font-weight: bold;
+}
+.navigation > li:hover > a {
+	color: #03A9F4;
+	border-left: 3px solid #03A9F4;
+  background-color: transparent;
+}
+.project-item {
+  border-top: 1px solid #E6E8EB;
+  border-left: 1px solid transparent;
+  border-right: 1px solid transparent;
+}
+.card {
+	border: 1px solid #E6E8EB
+}
+.page-content {
+  margin: 0 25px 0 265px
+}
+.btn-outline {
+  color: #47525d;
+  border-color: #d0d4d9;
+  background: #fff;
+}
+.btn-outline:hover:not(:disabled) {
+  background: -webkit-linear-gradient(#fff, #f7f9fa);
+  background: linear-gradient(#fff, #f7f9fa);
+}
+.modal-header {
+	background-color: #fff;
+	color: #1B2733;
+	border-radius: 0
+}
+.modal-body {
+	border: 0;
+  background: #f6f9fc;
+  border-top: 1px solid #d0d4d9;
+}
+.modal-header .close {
+	color: #1B2733
+}

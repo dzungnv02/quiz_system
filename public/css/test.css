@@ -1,0 +1,64 @@
+body {
+	background: #e9ebee
+}
+h4 {
+	font-weight: bold
+}
+h5 {
+	font-size: 12px;
+	line-height: 1.5;
+	margin: 5px -10px
+}
+p { font-size: 13px }
+label {font-weight: 400}
+.q-title {
+	font-size: 16px
+}
+.exam-header {
+	background: #8BC34A;
+	padding: 20px;
+	-webkit-box-shadow: 0 4px 0 rgba(0,0,0,.1);
+	box-shadow: 0 4px 0 rgba(0,0,0,.1);
+	position: fixed;
+	width: 100%;
+	z-index: 111;
+	top: 0
+}
+.exam-content {
+	margin-top: 74px;
+	background: #fff
+}
+.exam-time {
+	color: #fff;
+	font-size: 20px;
+	font-weight: 700;
+	text-shadow: 0 4px 0 rgba(0,0,0,.1)
+}
+.exam-question {
+	margin: 20px
+}
+.exam-question > label {
+	padding-left: 15px
+}
+.exam-question-count {
+	font-size: 20px;
+  color: #fff;
+  flex: 2;
+  text-align: center;
+  display: none
+}
+.MJXc-display {
+	display: inline-block !important;
+	margin: 0 0.5em !important
+}
+
+@media (max-width: 768px) {
+	.exam-header .container {
+		display: flex;
+    justify-content: space-between;
+    align-items: baseline
+	}
+	.exam-question-count {
+		display: block
+	}
+}

@@ -1,0 +1,116 @@
+{
+	"user": {
+		"_id": "589dc0e459a1cb0fac142656",
+		"username": "",
+		"password": "",
+		"is_admin": false,
+		"is_creator": false, // true nếu là người tạo bài kiểm tra
+	},
+	"user_group": {
+		"_id": "589dc0e459a1cb0fac142656",
+		"name": "", // tên group
+		"users": [], // array id users
+		"exams": [], // array id của exam_online
+		"join_requests": [], // array id users request
+		"creator": "", // người tạo group
+	},
+	"user_activity": {
+		"_id": "589dc0e459a1cb0fac142656", // user _id
+		"group": [], // array _id group
+		"exam": [], // array _id exam
+	},
+	"term": {
+		"_id": "589dc0e459a1cb0fac142656",
+		"name": "", // tên kỳ thi
+		"link": "", // url
+		"groups": [], // array các group đối tượng dự thi
+		"exams": [], // array các bài kiểm tra
+		"info": {
+			"organization": "", // tên tổ chức, trường học
+			"email": "", // email
+			"address": "", // địa chỉ
+			"time_start": "", // giờ thi bắt đầu
+			"time_end": "", // giờ thi kết thúc
+			"date_start": "", // ngày bắt đầu
+			"date_end": "", // ngày kết thúc
+		},
+		"start": false, // true nếu người dùng kích hoạt
+		"creator": "" // người tạo kỳ thi
+	},
+	"exam": {
+		"_id": "589dc0e459a1cb0fac142656",
+		"name": "", // tên bài kiểm tra
+		"time": 3600, // thời gian làm bài
+		"questions": [], // array id các câu hỏi trong bài
+		"shuffle": true, // cho phép random câu hỏi và câu trả lời
+		"done": false, // true khi không có lỗi hay thông tin điền thiếu khi tạo bài
+		"tags": [], // array các môn học trong bài kiểm tra, vd: Toán 9, Toán 8
+		"groups": [], // array _id group
+		"info": "", // thông tin về bài kiểm tra
+		"link": "", // id chia sẻ bài, _id của exam_online tương ứng
+		"show_score": false, // cho phép xem điểm khi nộp bài
+		"show_hint": false, // cho phép xem đáp án đúng khi nộp bài
+		"do_again": false, // cho phép làm lại khi nộp bài
+		"creator": "" // người tạo bài
+	},
+	"question": {
+		"_id": "589dc0e459a1cb0fac142656",
+		"exam": "", // id bài kiểm tra
+		"question": "", // nội dung câu hỏi
+		"answers": [{
+			"text": "", // nội dung câu trả lời
+			"is_correct": false, // true nếu đây là lựa chọn đúng
+			"attachment": null // path file đính kèm
+		},{
+			"text": "",
+			"is_correct": false,
+			"attachment": null
+		}], // array câu trả lời
+		"form": "", // form nhập câu, true-false, one-answer...
+		"info": "", // thông tin về câu hỏi
+		"draft": true, // trạng thái nháp, false thì hoàn tất thông tin khi tạo câu
+		"tags": [], // array các môn học liên quan, vd: Toán 9, Toán 8
+		"attachment": null, // path file đính kèm hình ảnh or audio
+		"creator": "" // người tạo câu hỏi
+	},
+	"exam_online": {
+		"_id": "589dc0e459a1cb0fac142656",
+		"exam": "", // id bài kiểm tra
+		"users": [{
+			"user": "", // id của user
+			"logs": [{
+				"cheatsheet": [], // array index câu trả lời đúng
+				"answers": [], // array index câu trả lời của người dùng
+				"date": "", // thời gian
+				"score": 0, // điểm đạt được
+				"done": false, // true nếu hoàn thành
+				"finish_time": 0 // thời gian nộp bài
+			},{
+				"cheatsheet": [],
+				"answers": [],
+				"date": "",
+				"score": 0,
+				"done": false,
+				"finish_time": 0
+			}] // array lịch sử làm bài
+		}], // array user tham gia làm bài
+	},
+	"subject_tag": {
+		"_id": "589dc0e459a1cb0fac142656",
+		"name": "" // tên tag, vd: Toán 9, Toán 10....
+	},
+	"question_bank": {
+		"_id": "", // id của tags
+		"questions": [] // array id questions
+	},
+	"library": {
+		"_id": "589dc0e459a1cb0fac142656",
+		"file": {
+			"name": "",
+			"size": "",
+			"mime": "", // image || audio
+			"path": "", // relative path
+		},
+		"creator": "" // id người upload
+	}
+}

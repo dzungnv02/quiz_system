@@ -1,0 +1,335 @@
+<script type="text/javascript" src="/js/plugins/daterangepicker/moment.min.js"></script>
+<script type="text/javascript" src="/js/plugins/interface/mousewheel.js"></script>
+<link href="/js/plugins/jquery.jscrollpane/jquery.jscrollpane.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="/js/plugins/jquery.jscrollpane/jquery.jscrollpane.min.js"></script>
+
+<link href="/css/home1-cm.css" rel="stylesheet" type="text/css">
+<link href="/css/home1.css" rel="stylesheet" type="text/css">
+
+<style type="text/css">
+  .page-content {
+    margin: 0 !important
+  }
+</style>
+<div class="ks-column ks-page">
+  <div class="ks-content">
+    <div class="ks-body">
+      <div class="ks-messenger">
+        <div class="ks-discussions">
+          <div class="ks-search">
+            <div class="input-icon icon-right icon icon-lg icon-color-primary">
+              <input id="group-search" type="text" class="form-control" placeholder="Tìm nhóm...">
+              <span class="icon-addon">
+                <span class="icon-search3"></span>
+              </span>
+            </div>
+          </div>
+          <div class="ks-body ks-scrollable">
+            <ul class="ks-items user-group-list"></ul>
+          </div>
+          <div class="ks-footer">
+            <button class="btn btn-info-outline ks-light btn-block" data-action="join-group">
+              Tham gia nhóm
+            </button>
+          </div>
+        </div>
+        <div class="ks-messages user-group-chat">
+          <div class="ks-header">
+            <div class="ks-description">
+              <div class="ks-name">Toan 12</div>
+              <div class="ks-amount">3 thành viên</div>
+            </div>
+            <div class="ks-controls">
+              <div class="dropdown">
+                <button class="btn btn-primary-outline ks-light ks-no-text ks-no-arrow" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <span class="icon-cog icon"></span>
+                </button>
+                <div class="dropdown-menu dropdown-menu-right ks-simple" aria-labelledby="dropdownMenuButton">
+                  <a class="dropdown-item" href="#">
+                    <span class="la la-user-plus ks-icon"></span>
+                    <span class="ks-text">Mời bạn bè</span>
+                  </a>
+                  <a class="dropdown-item" href="#">
+                    <span class="la la-eye-slash ks-icon"></span>
+                    <span class="ks-text">Rời nhóm</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ks-body ks-scrollable">
+            <ul class="ks-items">
+              <li class="ks-separator">Hôm nay</li>
+
+              <li class="ks-item ks-self">
+                <span class="ks-avatar ks-offline">
+                            <img src="" width="36" height="36" class="img-circle">
+                        </span>
+                <div class="ks-body">
+                  <div class="ks-header">
+                    <span class="ks-name">ABC</span>
+                    <span class="ks-datetime">6:46 PM</span>
+                  </div>
+                  <div class="ks-message">
+                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum
+                  </div>
+                </div>
+              </li>
+              <li class="ks-item ks-from"">
+                <span class="ks-avatar ks-online">
+                  <img src="" width="36" height="36" class="img-circle">
+                </span>
+                <div class="ks-body">
+                  <div class="ks-header">
+                    <span class="ks-name">XYZ</span>
+                    <span class="ks-datetime">6:46 PM</span>
+                  </div>
+                  <div class="ks-message">
+                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum
+                  </div>
+                </div>
+              </li>
+              <li class="ks-item ks-self">
+                <span class="ks-avatar ks-offline">
+                            <img src="" width="36" height="36" class="img-circle">
+                        </span>
+                <div class="ks-body">
+                  <div class="ks-header">
+                    <span class="ks-name">ABC</span>
+                    <span class="ks-datetime">6:46 PM</span>
+                  </div>
+                  <div class="ks-message">
+                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum
+                  </div>
+                </div>
+              </li>
+              <li class="ks-item ks-self">
+                <span class="ks-avatar ks-offline">
+                            <img src="" width="36" height="36" class="img-circle">
+                        </span>
+                <div class="ks-body">
+                  <div class="ks-header">
+                    <span class="ks-name">ABC</span>
+                    <span class="ks-datetime">6:46 PM</span>
+                  </div>
+                  <div class="ks-message">
+                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum
+                  </div>
+                </div>
+              </li>
+              <li class="ks-item ks-self">
+                <span class="ks-avatar ks-offline">
+                            <img src="" width="36" height="36" class="img-circle">
+                        </span>
+                <div class="ks-body">
+                  <div class="ks-header">
+                    <span class="ks-name">ABC</span>
+                    <span class="ks-datetime">6:46 PM</span>
+                  </div>
+                  <div class="ks-message">
+                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum
+                  </div>
+                </div>
+              </li>
+              <li class="ks-item ks-self">
+                <span class="ks-avatar ks-offline">
+                            <img src="" width="36" height="36" class="img-circle">
+                        </span>
+                <div class="ks-body">
+                  <div class="ks-header">
+                    <span class="ks-name">ABC</span>
+                    <span class="ks-datetime">6:46 PM</span>
+                  </div>
+                  <div class="ks-message">
+                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum
+                  </div>
+                </div>
+              </li>
+              <li class="ks-item ks-self">
+                <span class="ks-avatar ks-offline">
+                            <img src="" width="36" height="36" class="img-circle">
+                        </span>
+                <div class="ks-body">
+                  <div class="ks-header">
+                    <span class="ks-name">ABC</span>
+                    <span class="ks-datetime">6:46 PM</span>
+                  </div>
+                  <div class="ks-message">
+                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div class="ks-footer">
+            <textarea class="form-control" placeholder="Viết gì đó..."></textarea>
+            <div class="ks-controls">
+              <button class="btn btn-primary">Gửi</button>
+            </div>
+          </div>
+        </div>
+        <div class="ks-info">
+          <div class="ks-header">Bài kiểm tra</div>
+          <div class="ks-body">
+            <div class="ks-list user-group-exam-list">
+              <div class="ks-header">
+                <span class="ks-text">Bài chưa làm</span>
+                <span class="ks-amount"></span>
+              </div>
+              <div class="todo-list"></div>
+              <div class="ks-header">
+                <span class="ks-text">Bài đã làm</span>
+                <span class="ks-amount"></span>
+              </div>
+              <div class="done-list"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="exam-histories modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body with-padding"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var glist = $('.user-group-list');
+  var elist = $('.user-group-exam-list');
+  var clist = $('.user-group-chat');
+  var exam_list = [];
+  var exams_viewed;
+
+  $('.ks-scrollable').jScrollPane({autoReinitialise:!0,autoReinitialiseDelay:300});
+
+  $.post('/group-search', {string: ''}, function(res) {
+    exams_viewed = res.exams_viewed;
+    glist.html(student_ui_render(res.data));
+    glist.find('[data-group="'+res.last+'"]').trigger('click')
+  });
+
+  $('#group-search').on('change', function(e) {
+    glist.empty();
+    var step = 5;
+    var data = {string: $(this).val().trim()}
+    if(step) data.step = step
+    else step = 0
+    $.post('/group-search', data, function(res) {
+      glist.html(student_search_render(res.data, true))
+    })
+  });
+
+  var student_ui_render = function(data) {
+    var html = '';
+    for (var i = 0; i < data.length; i++) {
+      exam_list[data[i]._id] = data[i].exams;
+      html += templates.frontend_group_list_item1(data[i])
+    }
+    return html
+  };
+
+  var student_search_render = function(res, group_only) {
+    var html = '';
+    for (var i = 0; i < res.length; i++) {
+      if (group_only) {
+        exam_list[res[i]._id] = res[i].exams;
+        html += templates.frontend_group_list_item1(res[i])
+      } else {
+        html += templates.frontend_exam_list_item(res[i]);
+      }
+    }
+    return html
+  };
+
+  var exam_list_reformat = function(data) {
+    var exams = {
+      viewed: [],
+      not_view: []
+    }
+    for (var i = 0; i < data.length; i++) {
+      if (exams_viewed.indexOf(data[i]._id) > -1) {
+        exams.viewed.push(data[i])
+      } else exams.not_view.push(data[i])
+    }
+    return exams
+  };
+
+  glist.on('click tab', '[data-action="group-view-exam"]', function(e) {
+    var that = $(this);
+    var group = that.data('group');
+    that.parent().find('li').removeClass('ks-active');
+    that.addClass('ks-active');
+    clist.find('.ks-header .ks-name').html(that.text());
+    elist.find('.todo-list').html(frontend_exam_loading_block(3));
+    elist.find('.done-list').html(frontend_exam_loading_block(3));
+    $.post('/group-view-exam', {group: group, exams: exam_list[group]}, function(res) {
+      var exams = exam_list_reformat(res)
+      setTimeout(function () {
+        elist.find('.todo-list').html(student_search_render(exams.not_view));
+        elist.children(':first-child').find('.ks-amount').text(exams.not_view.length)
+        elist.find('.done-list').html(student_search_render(exams.viewed))
+        elist.children(':nth-child(3)').find('.ks-amount').text(exams.viewed.length)
+      }, 1000)
+    })
+  });
+
+  elist.on('click', '[data-action="get-histories"]', function() {
+    var that = $(this);
+    var panel = $('.exam-histories');
+    panel.find('.modal-body').html(templates.frontend_exam_chart());
+    panel.modal('show');
+    $.post('/get-histories', {id: that.data('exam')}, function(res) {
+      if(res.ok) {
+        if (res.data.try_number != 0) {
+          var chart_data = {score: [], label: []};
+          for (var i = 0; i < res.data.scores.length; i++) {
+            chart_data.score.push([i, Number(res.data.scores[i])]);
+            chart_data.label.push(res.data.scores[i])
+          }
+          var dataset = { data: chart_data.score, points: { show: true }, showLabels: true, labels: chart_data.label, labelPlacement: "above", canvasRender: true, cColor: "#8bc34a" };
+          var chart = panel.find('.graph');
+          var analytics_div = panel.find('.analytics-number');
+          $.plot(chart, [dataset], plot_options);
+          analytics_div.html('<p>'+res.data.avg_score+'</p><p>'+res.data.try_number+'</p><p>'+ms_to_time(res.data.avg_time_finish)+'</p><p>'+moment(res.data.last_try).format("DD/MM/YYYY")+'</p>')
+        } else panel.html('<p class="text-center text-muted">Không có thống kê</p')
+      } else return false
+    })
+  });
+
+  $('[data-action="join-group"]').on('click', function(e) {
+    e.preventDefault();
+    swal({
+      title: "Nhóm !",
+      type: "input",
+      showCancelButton: true,
+      closeOnConfirm: false,
+      confirmButtonText: "Tham gia",
+      cancelButtonText: "Hủy",
+      showLoaderOnConfirm: true,
+      animation: "slide-from-top",
+      inputPlaceholder: "Nhập tên nhóm.."
+    },
+    function(inputValue){
+      if (inputValue === false) return false;
+      
+      if (inputValue === "") {
+        swal.showInputError("Tên nhóm không được bỏ trống!");
+        return false
+      }
+      $.post('/manager/group-join', {name: inputValue}, function(res) {
+        if(res.ok) {
+          swal.showInputSuccess('Yêu cầu tham gia nhóm '+inputValue+' đã được gửi');
+        } else {
+          swal.showInputError(res.error);
+          return false
+        }
+      })
+    })
+  });
+
+</script>

@@ -1,0 +1,202 @@
+<div class="user-group-intro" style="display: none;">
+	<div class="user-group-intro-item">
+		<div>
+				<h1>Nhóm thành viên</h1>
+				<h2>Tạo nhóm và chia sẻ bài tập, bài kiểm tra.</h2>
+				<button type="button" data-action="name-group" class="btn btn-info">+ Tạo nhóm</button>	
+			</div>
+			<img src="https://cfl.dropboxstatic.com/static/images/file_collector/ice-vflFIj_uo.png">
+	</div>
+	<div class="user-group-intro-item">
+		<div class="col-sm-3">
+			<div class="title">Nhóm để làm gì?</div>
+			<div class="text">Homework assignments, presentation slides, contest submissions, vacation photos, and family recipes are just some of the many things you can collect with file requests.</div></div>
+		<div class="col-sm-3">
+			<div class="title">Ai có thể tham gia?</div>
+			<div class="text">Mọi thành viên đều có thể tham gia.</div>
+		</div>
+		<div class="col-sm-3">
+			<div class="title">Chia sẻ bài tập như thế nào?</div>
+			<div class="text">We’ll create a folder for each request or you can choose one that’s already in your Dropbox.</div>
+		</div>
+	</div>
+</div>
+
+<div class="user-group" style="display: none;">
+	<div class="page-header">
+		<div class="page-title">
+			<h3>Danh sách nhóm <small>Thành viên tối đa mỗi nhóm là 1,000 người</small></h3>
+		</div>
+		<div class="visible-xs header-element-toggle">
+			<a class="btn btn-primary btn-icon" data-toggle="collapse" data-target="#header-buttons"><i class="icon-insert-template"></i></a>
+		</div>
+		<div class="header-buttons">
+			<div class="collapse" id="header-buttons">
+				<div class="well">
+	        <button type="button" data-action="name-group" class="btn btn-outline">+ Tạo nhóm</button>
+	      </div>
+	    </div>
+		</div>
+	</div>
+	<div class="row user-group-items"></div>
+</div>
+	
+
+<div id="join-requests" class="modal fade" tabindex="-1" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-body with-padding">
+				<table class="table table-simple join-requests-container">
+			    <thead>
+			      <tr>
+			        <th></th>
+			        <th class="actions-column"></th>
+			      </tr>
+			    </thead>
+			    <tbody>
+			    	<td></td>
+			    	<td></td>
+			    </tbody>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script async>
+	var user_groups = $('.user-group-items');
+	var table = $('.join-requests-container');
+	table.dataTable({
+    columnDefs: [{ 
+      orderable: false,
+      targets: [0,1]
+    }],
+    pagingType: 'full_numbers',
+		dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
+    language: {
+			processing: 'Đang tải...',
+			search: '_INPUT_',
+			info: '',
+			infoEmpty: '',
+			zeroRecords: 'Không tìm thấy',
+			lengthMenu: '',
+			paginate: { 'first': '', 'last': '', 'next': '>', 'previous': '<' }
+		}
+  });
+
+  //page_content.html(frontend_exam_loading_block(3));
+
+  $.post('/group-list', function(res) {
+  	if (res.groups.length > 0) {
+  		$('.user-group-intro').remove();
+  		$('.user-group').show()
+  		user_groups.html(creator_group_list_render(res.groups))
+  	} else {
+  		$('.user-group-intro').show()
+  	}
+  });
+  
+  var creator_group_list_render = function(data) {
+    var html = '';
+    for(var i = 0; i < data.length; i++) {
+      html += templates.creator_group_item(data[i]);
+    }
+    return html
+  };
+
+	$('[data-action="name-group"]').on('click', function(e) {
+		swal({
+		  title: "Tạo nhóm!",
+		  type: "input",
+		  showCancelButton: true,
+		  closeOnConfirm: false,
+		  confirmButtonText: "Tạo",
+  		cancelButtonText: "Hủy",
+		  showLoaderOnConfirm: true,
+		  animation: "slide-from-top",
+		  inputPlaceholder: "Nhập tên..."
+		},
+		function(inputValue){
+		  if (inputValue === false) return false;
+		  if (inputValue === "") {
+		    swal.showInputError("Tên nhóm không được bỏ trống!");
+		    return false
+		  }
+		  var input = inputValue.trim();
+		  $.post('/manager/group-create', {title: input}, function(res) {
+		  	if(res.ok) {
+		  		swal.showInputSuccess('Nhóm '+input+' đã được tạo');
+		  		push_notification('success','Updating...');
+		  		user_groups.append(templates.creator_group_item({_id: res.group, name: input}, true))
+		  	} else {
+		  		swal.showInputError(res.error);
+		    	return false
+		  	}
+		  })
+		})
+	});
+
+	user_groups.on('click', '[data-action="users-group"]', function() {
+		$.post('/manager/group-users', {id: $(this).data('group')}, function(res) {
+	  	if(res.ok) {
+	  		var html = '';
+	  		for (var i = 0; i < res.users.length; i++) {
+	  			html += '<tr><td style="width:90%"><i class="icon-user text-muted"></i> '+res.users[i].username+'</td><td></td></tr>'
+	  		}
+	  		table.find('tbody').html(html);
+	  		$('#join-requests').modal('show');
+	  	} else {
+	    	return false
+	  	}
+	  })
+	});
+
+	user_groups.on('click', '[data-action="list-join-requests"]', function() {
+	  var group = $(this).data('group');
+		$.post('/manager/group-requests', {id: group}, function(res) {
+	  	if(res.ok) {
+	  		var html = '';
+	  		for (var i = 0; i < res.users.length; i++) {
+	  			html += '<tr><td style="width:90%">'+res.users[i].username+'</td><td><button type="button" data-user="'+res.users[i]._id+'" data-action="accept-join-request" class="btn btn-info">Chấp nhận</button></td></tr>'
+	  		}
+	  		table.find('tbody').html(html);
+	  		$('#join-requests').modal('show');
+	  		$('[data-action="accept-join-request"]').on('click',function(){
+	  			var that = $(this);
+	  			$.post('/manager/group-requests', {accept:1,id:group,user:that.data('user')}, function(){
+	  				if(res.ok) that.parent().parent().fadeOut(300, function() { $(this).remove() })
+	  				else console.log(res.error)
+	  			})
+	  		})
+	  	} else {
+	    	return false
+	  	}
+	  })
+	});
+
+	user_groups.on('click', '[data-action="delete-group"]', function() {
+		var that = $(this);
+		var wrapper = that.parents('.user-group-item');
+		swal({
+		  title: "Bạn có chắc chắn?",
+		  text: "Mọi dữ liệu sẽ không thể khôi phục!",
+		  type: "warning",
+		  showCancelButton: true,
+		  confirmButtonColor: "#DD6B55",
+		  confirmButtonText: "Đồng ý xóa!",
+		  closeOnConfirm: false,
+		  showLoaderOnConfirm: true,
+		  animation: "slide-from-top"
+		},
+		function(){
+		  $.post('/manager/group-delete', {id: that.data('group')}, function(res) {
+		  	if(res.ok) {
+		  		wrapper.remove();
+		  		push_notification('success','Updating...');
+		  		swal.close();
+		  	} else {
+		    	return false
+		  	}
+		  })
+		})
+	})
+</script>

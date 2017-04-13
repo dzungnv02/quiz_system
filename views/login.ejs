@@ -1,0 +1,54 @@
+<style type="text/css">
+	.login-button {
+		width: 100%
+	}
+	.well {
+		box-shadow: 0 0 100px rgba(0,0,0,.08)
+	}
+	.well > div:first-child {
+		font-size: 16px;
+    margin: 10px 0 20px;
+	}
+	p {
+		color: #ccc;
+    text-align: center;
+    margin-top: 16px;
+	}
+	p span:first-child {
+    margin-right: 16px;
+	}
+</style>
+<div class="login-wrapper">
+	<form id="login-form" role="form" method="post">
+		<div class="well">
+			<div class="text-center text-info"><strong>Exam</strong>system</div>
+			<div class="alert alert-danger fade hide block-inner">
+        <i class="icon-cancel-circle"></i> <span class="error-text"></span>
+    	</div>
+			<div class="form-group">
+				<input type="text" name="username" class="form-control" placeholder="Tài khoản" required>
+			</div>
+			<div class="form-group">
+				<input type="password" name="password" class="form-control" placeholder="Mật khẩu" required>
+			</div>
+			<div class="row form-actions">
+				<div class="col-xs-12">
+					<button type="submit" class="btn btn-info login-button">Đăng nhập</button>
+				</div>
+			</div>
+		</div>
+	</form>
+	<script>
+		$('input[name="username"]').focus();
+		$('#login-form').on('submit', function(e) {
+			e.preventDefault();
+			var data = $(this).serialize();
+			//$.get('http://api.violet.vn/user/noop');
+			$.post('/login', data, function(res) {
+				if (res.error) {
+					$('.alert-danger').removeClass('hide').addClass('in').find('.error-text').text(res.error)
+				} else if(res.ok) location.href = res.redirect
+			})
+		})
+	</script>
+</div>

@@ -1,0 +1,278 @@
+<div class="page-header">
+	<div class="page-title">
+		<h3>Quản lý <small> bài kiểm tra & kỳ thi</small></h3>
+	</div>
+</div>
+
+<div class="list"></div>
+
+<div class="load-group modal fade" tabindex="-1" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title"><i class="icon-men"></i> Thêm nhóm làm bài</h4>
+			</div>
+			<div class="modal-body with-padding">
+				<div class="block-inner text-danger">
+					<h6 class="heading-hr">Chọn nhóm <small class="display-block">trong các nhóm bạn đã tạo</small></h6>
+				</div>
+				<select multiple="multiple" class="add-group"></select>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="exam-analytics modal fade" tabindex="-1" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title"><i class="icon-men"></i> Thống kê</h4>
+			</div>
+			<div class="modal-body">
+				<div class="flex-wrap" style="align-items: inherit">
+					<div class="hall-of-frame">
+						<div class="ks-widget ks-widget-leader-board">
+              <div class="card-block ks-scrollable">
+								<table class="ks-table">
+                 	<tbody>
+                    <tr class="ks-first-place">
+                      <td class="ks-user">
+                        <img src="http://placehold.it/300" class="ks-avatar" width="55" height="55">
+                        <span class="badge badge-pill badge-default ks-label"><span>1</span></span>
+                      </td>
+                      <td class="ks-info"></td>
+                    </tr>
+                    <tr class="ks-second-place">
+                      <td class="ks-user">
+                        <img src="http://placehold.it/300" class="ks-avatar" width="55" height="55">
+                        <span class="badge badge-pill badge-default ks-label"><span>2</span></span>
+                      </td>
+                      <td class="ks-info"></td>
+                    </tr>
+                    <tr class="ks-third-place">
+                      <td class="ks-user">
+                        <img src="http://placehold.it/300" class="ks-avatar" width="55" height="55">
+                        <span class="badge badge-pill badge-default ks-label"><span>3</span></span>
+                      </td>
+                      <td class="ks-info"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+					</div>
+					<div class="analytics">
+						<div class="ks-solid ks-widget ks-widget-info">
+              <div class="card-block">
+              	<div class="ks-item">
+                	<input type="text" name="" class="form-control" placeholder="Tìm thành viên..">
+                </div>
+                <div class="ks-item">
+                  <span>Số lượng người tham gia</span>
+                  <span class="analytics-1">0</span>
+                </div>
+                <div class="ks-item">
+                  <span>Thời gian làm trung bình</span>
+                  <span class="analytics-2">00:00:00</span>
+                </div>
+                <div class="ks-item">
+                  <span>Thời gian làm nhanh nhất</span>
+                  <span class="analytics-3">00:00:00</span>
+                </div>
+              </div>
+          	</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		var celist = $('.list');
+		celist.empty().html(frontend_exam_loading_block(3));
+		$.post('/exam-list', function(res) {
+			if(res.ok) {
+				setTimeout(function () {
+					celist.html(creator_exam_list_render(res.data))
+				}, 1000)
+			} else celist.empty()
+		})
+
+		var creator_exam_list_render = function(data) {
+			var html = '';
+			for (var i = 0; i < data.length; i++) {
+				html += templates.creator_exam_list(data[i]);
+			}
+			return html
+		}
+		
+		var selected = {};
+
+		celist.on('click', '[data-action="add-group"]', function(e) {
+			var that = $(this);
+			var content = that.parent().find('span:first-child').children();
+			var dropdown = $('.add-group');
+			var initials = [];
+			var s = [];
+			selected.id = that.parent().parent().parent().data('exam');
+			selected.link = that.data('link');
+	    for (var i = 0; i < content.length; i++) {
+	    	var tmp = $(content[i]);
+	      initials.push({id: tmp.data('group'), name: tmp.text().slice(0, -2)});
+	      s.push(tmp.data('group'));
+	    }
+			dropdown.select2({
+				width: '100%',
+				placeholder: 'Thêm nhóm...',
+				tags:true,
+				data: initials,
+				ajax: {
+			    url: "/manager/group-list",
+			    dataType: 'json',
+			    delay: 250,
+			    processResults: function (data, params) {
+			      params.page = params.page || 1;
+			      data.groups.forEach(function(entry, index) {
+		          entry.id = entry._id;
+		      	});
+			      return {
+			        results: data.groups,
+			        pagination: {
+			          more: (params.page * 30) < data.length
+			        }
+			      };
+			    },
+			    cache: true
+			  },
+			  escapeMarkup: function (markup) { return markup },
+			  minimumResultsForSearch: Infinity,
+			  templateResult: formatRepo,
+			  templateSelection: formatRepoSelection
+			}).val(s).trigger('change').on('change',function() {
+				var label = $(this).parent().find('.select2-selection__choice');
+				var data = {
+					id: selected.id,
+					link: selected.link,
+					group: $(this).val()
+				};
+				update_group_share(data, function() {
+					var tmp = '';
+					for (var i = 0; i < data.group.length; i++) {
+						tmp += '<span data-group="'+data.group[i]+'" class="text-semibold text-info">'+$(label[i]).text().substring(1)+', </span>';
+					}
+					that.parent().find('span:first-child').html(tmp);
+				})
+			});
+			$('.load-group').modal('show')
+		});
+
+		celist.on('click', '[data-action="edit-exam"]', function(e) {
+			e.preventDefault()
+			selected.id = $(this).parents('.project-item').data('exam');
+			window.location = '/manager/exam?exam='+selected.id
+		});
+
+		celist.on('click', '[data-action="share-exam"]', function(e) {
+			e.preventDefault()
+			selected.id = $(this).parents('.project-item').data('exam');
+			var link = $(this).data('link');
+			if (!link) {
+				$.post('/manager/exam-share', {id: selected.id}, function(res) {
+					alert_share(res.link);
+				})
+			} else alert_share(link)
+		});
+
+		celist.on('click', '[data-action="delete-exam"]', function(e) {
+			e.preventDefault();
+			var wrapper = $(this).parents('.project-item');
+			selected.id = wrapper.data('exam');
+			$.post('/manager/exam-delete', {id: selected.id}, function(res) {
+				wrapper.remove();
+				push_notification('success','Remove...')
+			})
+		});
+
+		celist.on('click', '[data-action="exam-analytics"]', function(e) {
+			e.preventDefault();
+			var wrapper = $(this).parents('.project-item');
+			selected.id = wrapper.data('exam');
+			$.post('/manager/exam-analytics', {id: selected.id}, function(res) {
+				if (res.info) {
+					var shortest_time = res.info[0].time,
+							avg_time = 0,
+							leaders = [res.info[0], res.info[1], res.info[2]],
+							tmp;
+					for (var i = 0; i < res.info.length; i++) {
+						if(res.info[i].time < shortest_time) shortest_time = res.info[i].time;
+						if(res.info[i].score > leaders[0].score) {
+							leaders[1] = leaders[0];
+							leaders[2] = leaders[0];
+							leaders[0] = res.info[i];
+						} else if(res.info[i].score > leaders[1].score) {
+							leaders[2] = leaders[1];
+							leaders[1] = res.info[i];
+						} else if(res.info[i].score > leaders[2].score) {
+							leaders[2] = res.info[i];
+						}
+						avg_time += res.info[i].time
+					}
+					avg_time = avg_time / res.info.length;
+					$('.analytics-1').text(res.users);
+					$('.analytics-2').text(ms_to_time(avg_time));
+					$('.analytics-3').text(ms_to_time(shortest_time));
+					$('.ks-first-place').find('.ks-info').html('<span class="ks-name">'+leaders[0].user+'</span><span class="ks-description">'+leaders[0].score+' điểm</span>');
+					$('.ks-second-place').find('.ks-info').html('<span class="ks-name">'+leaders[1].user+'</span><span class="ks-description">'+leaders[1].score+' điểm</span>');
+					$('.ks-third-place').find('.ks-info').html('<span class="ks-name">'+leaders[2].user+'</span><span class="ks-description">'+leaders[2].score+' điểm</span>');
+				}
+			})
+			$('.exam-analytics').modal('show');
+		});
+
+		var update_group_share = function(data, callback) {
+			$.post('/manager/exam-share', data, function(res) {
+				push_notification('success','Updating...');
+				if(res.ok) callback()
+			})
+		}
+		var alert_share = function(link) {
+			var full_link = 'http:/localhost:3000/test/'+link;
+			swal({
+			  title: "Chia sẻ!",
+			  text: "Gửi link để làm bài kiểm tra",
+			  type: "input",
+			  showCancelButton: true,
+			  closeOnConfirm: true,
+			  confirmButtonText: "Copy !!!",
+				cancelButtonText: "Hủy chia sẻ",
+			  animation: "slide-from-top",
+			  inputValue: full_link
+			},
+			function(isConfirm){
+				if (isConfirm) {
+					var success = true,
+				      range = document.createRange(),
+				      selection;
+					var tmpElem = $('<div>');
+			    tmpElem.css({position: "absolute",left:"-1000px",top:"-1000px"});
+			    tmpElem.text(full_link);
+			    $('body').append(tmpElem);
+			    range.selectNodeContents(tmpElem.get(0));
+			    selection = window.getSelection();
+			    selection.removeAllRanges();
+			    selection.addRange(range);
+				  document.execCommand('copy');
+				  tmpElem.remove();
+				} else {
+					$.post('/manager/exam-share', {id: selected.id, link: link, cancel: true}, function(res) {
+						console.log('Canceled')
+					})
+				}	
+			})
+		}
+	})
+</script>
